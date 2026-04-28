@@ -6,11 +6,13 @@ import ThreadCard from '@/components/ThreadCard';
 import ThreadForm from '@/components/ThreadForm';
 import AIPromptModal from '@/components/AIPromptModal';
 import DataManager from '@/components/DataManager';
+import QuickPasteSheet from '@/components/QuickPasteSheet';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
   Plus,
+  ClipboardPaste,
   Search,
   Sparkles,
   Database,
@@ -40,6 +42,7 @@ export default function Home() {
     threads,
     stats,
     addThread,
+    addThreads,
     updateThread,
     deleteThread,
     exportData,
@@ -50,6 +53,7 @@ export default function Home() {
   const [editingThread, setEditingThread] = useState<Thread | null>(null);
   const [aiOpen, setAiOpen] = useState(false);
   const [dataOpen, setDataOpen] = useState(false);
+  const [quickPasteOpen, setQuickPasteOpen] = useState(false);
 
   const [search, setSearch] = useState('');
   const [activeFilterTag, setActiveFilterTag] = useState<string | null>(null);
@@ -275,21 +279,30 @@ export default function Home() {
       </main>
 
       {/* Bottom action bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t px-4 py-3 z-40 flex items-center gap-3 max-w-3xl mx-auto w-full">
+      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t px-4 py-3 z-40 flex items-center gap-2 max-w-3xl mx-auto w-full">
+        <Button
+          variant="secondary"
+          className="h-12 px-3 shrink-0 gap-1.5 text-xs font-medium"
+          onClick={() => setQuickPasteOpen(true)}
+          title="粘贴整章或 GPT 对话，少填表"
+        >
+          <ClipboardPaste className="w-4 h-4 shrink-0" />
+          <span className="max-[340px]:sr-only">粘贴</span>
+        </Button>
         <Button
           variant="default"
-          className="flex-1 h-12 gap-2 text-sm font-semibold shadow-lg"
+          className="flex-1 h-12 gap-2 text-sm font-semibold shadow-lg min-w-0"
           onClick={openNew}
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 shrink-0" />
           埋新坑
         </Button>
         <Button
           variant="outline"
-          className="h-12 px-4 gap-2 text-sm font-medium border-primary/30 text-primary"
+          className="h-12 px-3 sm:px-4 gap-2 text-sm font-medium border-primary/30 text-primary shrink-0"
           onClick={() => setAiOpen(true)}
         >
-          <Sparkles className="w-4 h-4" />
+          <Sparkles className="w-4 h-4 shrink-0" />
           AI串联
         </Button>
       </div>
@@ -314,6 +327,12 @@ export default function Home() {
         onClose={() => setDataOpen(false)}
         onExport={exportData}
         onImport={importData}
+      />
+
+      <QuickPasteSheet
+        open={quickPasteOpen}
+        onClose={() => setQuickPasteOpen(false)}
+        onSaveMany={addThreads}
       />
     </div>
   );
