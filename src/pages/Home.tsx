@@ -1,411 +1,285 @@
-import { useState, useMemo } from 'react';
-import type { Thread, ThreadStatus } from '@/types/thread';
-import { statusLabels } from '@/types/thread';
-import { useNovelStore } from '@/hooks/useNovelStore';
-import ThreadCard from '@/components/ThreadCard';
-import ThreadForm from '@/components/ThreadForm';
-import AIPromptModal from '@/components/AIPromptModal';
-import DataManager from '@/components/DataManager';
-import QuickPasteSheet from '@/components/QuickPasteSheet';
-import ChapterCyclePanel from '@/components/ChapterCyclePanel';
+import { useEffect, useState } from 'react';
+import { useSimpleStore } from '@/hooks/useSimpleStore';
+import type { Clue, ValueItem } from '@/types/simple';
+import { clueStatusLabel } from '@/types/simple';
+import ClueForm from '@/components/ClueForm';
+import ValueForm from '@/components/ValueForm';
 import ParticleSea from '@/components/ParticleSea';
+import DataManager from '@/components/DataManager';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import {
-  Plus,
-  ClipboardPaste,
-  Search,
-  Sparkles,
-  Database,
-  ChevronDown,
-  ChevronUp,
-  X,
   BookOpen,
-  Layers,
-  CheckCircle2,
-  Timer,
-  HelpCircle,
-  Trash2,
-  Users,
-  Tag,
-  RefreshCw,
+  Database,
+  ExternalLink,
+  Plus,
   Orbit,
+  Trash2,
+  Check,
 } from 'lucide-react';
 
-type MainTab = 'threads' | 'cycle' | 'sea';
-
-const statusOrder: ThreadStatus[] = ['buried', 'pending', 'resolved', 'abandoned'];
-const statusHeaderIcons = {
-  buried: Timer,
-  pending: HelpCircle,
-  resolved: CheckCircle2,
-  abandoned: Layers,
-};
+type Tab = 'clues' | 'values' | 'sea';
 
 export default function Home() {
   const {
-    threads,
-    chapters,
+    sheetUrl,
+    clues,
+    values,
     links,
     stats,
-    addThread,
-    addThreads,
-    updateThread,
-    deleteThread,
-    addChapter,
-    updateChapter,
-    deleteChapter,
+    setSheetUrl,
+    addClue,
+    updateClue,
+    deleteClue,
+    addValue,
+    updateValue,
+    deleteValue,
     addLink,
     deleteLink,
     exportData,
     importData,
-  } = useNovelStore();
+  } = useSimpleStore();
 
-  const [tab, setTab] = useState<MainTab>('cycle');
-  const [writeNonce, setWriteNonce] = useState(0);
-  const [formOpen, setFormOpen] = useState(false);
-  const [editingThread, setEditingThread] = useState<Thread | null>(null);
-  const [aiOpen, setAiOpen] = useState(false);
+  const [tab, setTab] = useState<Tab>('clues');
+  const [sheetDraft, setSheetDraft] = useState(sheetUrl);
+
+  useEffect(() => {
+    setSheetDraft(sheetUrl);
+  }, [sheetUrl]);
   const [dataOpen, setDataOpen] = useState(false);
-  const [quickPasteOpen, setQuickPasteOpen] = useState(false);
+  const [clueOpen, setClueOpen] = useState(false);
+  const [valueOpen, setValueOpen] = useState(false);
+  const [editClue, setEditClue] = useState<Clue | null>(null);
+  const [editValue, setEditValue] = useState<ValueItem | null>(null);
 
-  const [search, setSearch] = useState('');
-  const [activeFilterTag, setActiveFilterTag] = useState<string | null>(null);
-  const [activeFilterChar, setActiveFilterChar] = useState<string | null>(null);
-  const [collapsed, setCollapsed] = useState<Record<ThreadStatus, boolean>>({
-    buried: false,
-    pending: false,
-    resolved: true,
-    abandoned: true,
-  });
-
-  const allCharacters = useMemo(
-    () => Array.from(new Set(threads.flatMap(t => t.characters))).sort(),
-    [threads]
-  );
-
-  const allTags = useMemo(
-    () => Array.from(new Set(threads.flatMap(t => t.tags))).sort(),
-    [threads]
-  );
-
-  const filteredThreads = useMemo(() => {
-    return threads.filter(t => {
-      const matchesSearch =
-        !search.trim() ||
-        t.title.includes(search) ||
-        t.content.includes(search) ||
-        t.notes.includes(search) ||
-        t.chapterBuried.includes(search) ||
-        t.chapterResolved.includes(search);
-      const matchesTag = !activeFilterTag || t.tags.includes(activeFilterTag);
-      const matchesChar = !activeFilterChar || t.characters.includes(activeFilterChar);
-      return matchesSearch && matchesTag && matchesChar;
-    });
-  }, [threads, search, activeFilterTag, activeFilterChar]);
-
-  const grouped = useMemo(() => {
-    const map: Record<ThreadStatus, Thread[]> = {
-      buried: [],
-      resolved: [],
-      abandoned: [],
-      pending: [],
-    };
-    for (const t of filteredThreads) {
-      map[t.status].push(t);
-    }
-    return map;
-  }, [filteredThreads]);
-
-  const toggleCollapse = (status: ThreadStatus) => {
-    setCollapsed(prev => ({ ...prev, [status]: !prev[status] }));
+  const openNewClue = () => {
+    setEditClue(null);
+    setClueOpen(true);
   };
-
-  const openNew = () => {
-    setEditingThread(null);
-    setFormOpen(true);
+  const openNewValue = () => {
+    setEditValue(null);
+    setValueOpen(true);
   };
-
-  const openEdit = (thread: Thread) => {
-    setEditingThread(thread);
-    setFormOpen(true);
-  };
-
-  const handleSave = (form: Omit<Thread, 'id' | 'createdAt' | 'updatedAt'>) => {
-    if (editingThread) {
-      updateThread(editingThread.id, form);
-    } else {
-      addThread(form);
-    }
-  };
-
-  const hasActiveFilters = activeFilterTag || activeFilterChar || search;
 
   return (
     <div className="min-h-dvh bg-background text-foreground flex flex-col max-w-3xl mx-auto">
-      <header className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b px-4 pt-3 pb-2">
-        <div className="flex items-center justify-between mb-3">
+      <header className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b px-4 pt-3 pb-2 space-y-3">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-primary" />
             <h1 className="text-lg font-bold tracking-tight">草蛇灰线</h1>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => setDataOpen(true)}>
-              <Database className="w-4 h-4 text-muted-foreground" />
+          <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => setDataOpen(true)}>
+            <Database className="w-4 h-4 text-muted-foreground" />
+          </Button>
+        </div>
+
+        {/* Google Sheet — single place for the novel itself */}
+        <div className="rounded-xl border border-border/80 bg-muted/20 p-3 space-y-2">
+          <div className="text-xs font-medium text-muted-foreground">正文（Google Sheet）</div>
+          <div className="flex gap-2">
+            <Input
+              value={sheetDraft}
+              onChange={e => setSheetDraft(e.target.value)}
+              onBlur={() => setSheetUrl(sheetDraft.trim())}
+              placeholder="粘贴你的表格链接…"
+              className="h-10 text-sm"
+              inputMode="url"
+            />
+            <Button
+              variant="secondary"
+              className="h-10 px-3 shrink-0"
+              disabled={!sheetDraft.trim()}
+              onClick={() => {
+                const url = sheetDraft.trim();
+                setSheetUrl(url);
+                window.open(url, '_blank', 'noopener,noreferrer');
+              }}
+            >
+              <ExternalLink className="w-4 h-4" />
             </Button>
           </div>
         </div>
 
-        <div className="grid grid-cols-4 gap-2 mb-3">
-          <div className="bg-primary/5 rounded-lg p-2 text-center">
-            <div className="text-lg font-bold leading-none">{stats.chapters}</div>
-            <div className="text-[10px] text-muted-foreground mt-1">章节循环</div>
-          </div>
-          <div className="bg-amber-500/8 rounded-lg p-2 text-center">
-            <div className="text-lg font-bold leading-none text-amber-500">{stats.buried}</div>
-            <div className="text-[10px] text-muted-foreground mt-1">未回收线索</div>
-          </div>
-          <div className="bg-sky-500/8 rounded-lg p-2 text-center">
-            <div className="text-lg font-bold leading-none text-sky-400">{stats.links}</div>
-            <div className="text-[10px] text-muted-foreground mt-1">嫁接连线</div>
-          </div>
-          <div className="bg-rose-500/8 rounded-lg p-2 text-center">
-            <div className="text-lg font-bold leading-none text-rose-400">{stats.driftD}</div>
-            <div className="text-[10px] text-muted-foreground mt-1">需收束 D</div>
-          </div>
+        <div className="grid grid-cols-3 gap-2">
+          <Stat n={stats.open} label="未回收 A" tone="amber" />
+          <Stat n={stats.values} label="价值观 B" tone="violet" />
+          <Stat n={stats.links} label="连线" tone="sky" />
         </div>
 
-        <div className="grid grid-cols-3 gap-1.5 mb-2 p-1 rounded-xl bg-muted/40 border border-border/60">
+        <div className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-muted/40 border border-border/60">
           {(
             [
-              { key: 'cycle' as const, label: '章节循环', icon: RefreshCw },
-              { key: 'sea' as const, label: '粒子海', icon: Orbit },
-              { key: 'threads' as const, label: '线索台账', icon: Layers },
+              { key: 'clues' as const, label: 'A 线索' },
+              { key: 'values' as const, label: 'B 价值观' },
+              { key: 'sea' as const, label: '粒子海', icon: true },
             ] as const
-          ).map(item => {
-            const Icon = item.icon;
-            const active = tab === item.key;
-            return (
-              <button
-                key={item.key}
-                type="button"
-                onClick={() => setTab(item.key)}
-                className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-colors ${
-                  active
-                    ? 'bg-background text-foreground shadow-sm'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                {item.label}
-              </button>
-            );
-          })}
+          ).map(item => (
+            <button
+              key={item.key}
+              type="button"
+              onClick={() => setTab(item.key)}
+              className={`flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-medium transition-colors ${
+                tab === item.key
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground'
+              }`}
+            >
+              {'icon' in item && item.icon ? <Orbit className="w-3.5 h-3.5" /> : null}
+              {item.label}
+            </button>
+          ))}
         </div>
-
-        {tab === 'threads' && (
-          <>
-            <div className="relative mb-2">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-              <Input
-                placeholder="搜索线索、章节、内容..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="h-9 pl-9 pr-8 text-sm"
-              />
-              {search && (
-                <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2">
-                  <X className="w-3.5 h-3.5 text-muted-foreground" />
-                </button>
-              )}
-            </div>
-
-            {(allTags.length > 0 || allCharacters.length > 0) && (
-              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-                {hasActiveFilters && (
-                  <button
-                    onClick={() => {
-                      setActiveFilterTag(null);
-                      setActiveFilterChar(null);
-                      setSearch('');
-                    }}
-                    className="shrink-0 text-[11px] px-2 py-1 rounded-full bg-destructive/10 text-destructive border border-destructive/20"
-                  >
-                    清除筛选
-                  </button>
-                )}
-                {allCharacters.slice(0, 6).map(c => (
-                  <button
-                    key={c}
-                    onClick={() => setActiveFilterChar(activeFilterChar === c ? null : c)}
-                    className={`shrink-0 inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border transition-colors ${
-                      activeFilterChar === c
-                        ? 'bg-secondary text-secondary-foreground border-secondary'
-                        : 'bg-background text-muted-foreground border-border'
-                    }`}
-                  >
-                    <Users className="w-3 h-3" />
-                    {c}
-                  </button>
-                ))}
-                {allTags.slice(0, 6).map(t => (
-                  <button
-                    key={t}
-                    onClick={() => setActiveFilterTag(activeFilterTag === t ? null : t)}
-                    className={`shrink-0 inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border transition-colors ${
-                      activeFilterTag === t
-                        ? 'bg-primary/15 text-primary border-primary/30'
-                        : 'bg-background text-muted-foreground border-border'
-                    }`}
-                  >
-                    <Tag className="w-3 h-3" />
-                    {t}
-                  </button>
-                ))}
-              </div>
-            )}
-          </>
-        )}
       </header>
 
       <main className="flex-1 px-4 py-3 pb-24">
-        {tab === 'cycle' && (
-          <ChapterCyclePanel
-            chapters={chapters}
-            onAddChapter={addChapter}
-            onUpdateChapter={updateChapter}
-            onDeleteChapter={deleteChapter}
-            writeNonce={writeNonce}
-          />
+        {tab === 'clues' && (
+          <div className="space-y-2">
+            {clues.length === 0 && (
+              <Empty tip="点下方「加线索」记一条伏笔即可，别写长文。" />
+            )}
+            {clues.map(c => (
+              <button
+                key={c.id}
+                type="button"
+                onClick={() => {
+                  setEditClue(c);
+                  setClueOpen(true);
+                }}
+                className="w-full text-left rounded-xl border border-border bg-card/60 px-3 py-3 active:scale-[0.99] transition-transform"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold truncate">{c.title}</div>
+                    {c.note && (
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{c.note}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <span
+                      className={`text-[10px] px-2 py-0.5 rounded-full border ${
+                        c.status === 'open'
+                          ? 'border-amber-500/40 text-amber-400'
+                          : 'border-emerald-500/40 text-emerald-400'
+                      }`}
+                    >
+                      {clueStatusLabel[c.status]}
+                    </span>
+                    <button
+                      type="button"
+                      className="p-1.5 rounded-md text-muted-foreground hover:text-destructive"
+                      onClick={e => {
+                        e.stopPropagation();
+                        if (confirm('删除这条线索？')) deleteClue(c.id);
+                      }}
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+                {c.status === 'open' && (
+                  <div className="mt-2">
+                    <button
+                      type="button"
+                      className="inline-flex items-center gap-1 text-[11px] text-emerald-400/90"
+                      onClick={e => {
+                        e.stopPropagation();
+                        updateClue(c.id, { status: 'done' });
+                      }}
+                    >
+                      <Check className="w-3 h-3" />
+                      标为已回收
+                    </button>
+                  </div>
+                )}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {tab === 'values' && (
+          <div className="space-y-2">
+            {values.length === 0 && (
+              <Empty tip="加几个你想贯穿全书的价值观/主题，例如「正义的代价」。" />
+            )}
+            {values.map(v => (
+              <button
+                key={v.id}
+                type="button"
+                onClick={() => {
+                  setEditValue(v);
+                  setValueOpen(true);
+                }}
+                className="w-full text-left rounded-xl border border-border bg-card/60 px-3 py-3 active:scale-[0.99] transition-transform"
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold truncate">
+                      <span className="text-violet-300 mr-1.5">B</span>
+                      {v.title}
+                    </div>
+                    {v.note && (
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{v.note}</p>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    className="p-1.5 rounded-md text-muted-foreground hover:text-destructive shrink-0"
+                    onClick={e => {
+                      e.stopPropagation();
+                      if (confirm('删除这条价值观？')) deleteValue(v.id);
+                    }}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </button>
+            ))}
+          </div>
         )}
 
         {tab === 'sea' && (
           <ParticleSea
-            chapters={chapters}
-            threads={threads}
+            clues={clues}
+            values={values}
             links={links}
             onAddLink={addLink}
             onDeleteLink={deleteLink}
           />
         )}
-
-        {tab === 'threads' && (
-          <>
-            {filteredThreads.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-                <Layers className="w-10 h-10 mb-3 opacity-30" />
-                <p className="text-sm">还没有线索</p>
-                <p className="text-xs mt-1 opacity-70">用「粘贴」丢章节/对话，或点「埋新坑」</p>
-              </div>
-            )}
-
-            {statusOrder.map(status => {
-              const list = grouped[status];
-              if (list.length === 0) return null;
-              const isCollapsed = collapsed[status];
-              const Icon = statusHeaderIcons[status];
-
-              return (
-                <div key={status} className="mb-4">
-                  <button
-                    onClick={() => toggleCollapse(status)}
-                    className="flex items-center justify-between w-full py-2 text-left group"
-                  >
-                    <div className="flex items-center gap-2">
-                      <Icon
-                        className={`w-4 h-4 ${
-                          status === 'buried'
-                            ? 'text-amber-500'
-                            : status === 'resolved'
-                              ? 'text-emerald-500'
-                              : status === 'abandoned'
-                                ? 'text-slate-400'
-                                : 'text-violet-500'
-                        }`}
-                      />
-                      <span className="text-sm font-semibold">{statusLabels[status]}</span>
-                      <Badge variant="secondary" className="text-[10px] h-5 px-1.5">
-                        {list.length}
-                      </Badge>
-                    </div>
-                    {isCollapsed ? (
-                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                    ) : (
-                      <ChevronUp className="w-4 h-4 text-muted-foreground" />
-                    )}
-                  </button>
-
-                  {!isCollapsed && (
-                    <div className="space-y-1">
-                      {list.map(thread => (
-                        <div key={thread.id} className="relative group/card">
-                          <ThreadCard thread={thread} onClick={openEdit} />
-                          <button
-                            onClick={() => {
-                              if (confirm('确定删除这条线索？')) deleteThread(thread.id);
-                            }}
-                            className="absolute top-2 right-2 p-1.5 rounded-md bg-destructive/90 text-destructive-foreground opacity-0 group-hover/card:opacity-100 transition-opacity"
-                            title="删除"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </>
-        )}
       </main>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t px-4 py-3 z-40 flex items-center gap-2 max-w-3xl mx-auto w-full">
-        <Button
-          variant="secondary"
-          className="h-12 px-3 shrink-0 gap-1.5 text-xs font-medium"
-          onClick={() => setQuickPasteOpen(true)}
-          title="粘贴整章或 GPT 对话"
-        >
-          <ClipboardPaste className="w-4 h-4 shrink-0" />
-          <span className="max-[340px]:sr-only">粘贴</span>
-        </Button>
-        <Button
-          variant="default"
-          className="flex-1 h-12 gap-2 text-sm font-semibold shadow-lg min-w-0"
-          onClick={() => {
-            if (tab === 'cycle') {
-              setWriteNonce(n => n + 1);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            } else {
-              openNew();
-            }
-          }}
-        >
-          <Plus className="w-4 h-4 shrink-0" />
-          {tab === 'cycle' ? '写新章' : '埋新坑'}
-        </Button>
-        <Button
-          variant="outline"
-          className="h-12 px-3 sm:px-4 gap-2 text-sm font-medium border-primary/30 text-primary shrink-0"
-          onClick={() => setAiOpen(true)}
-        >
-          <Sparkles className="w-4 h-4 shrink-0" />
-          AI串联
-        </Button>
-      </div>
+      {tab !== 'sea' && (
+        <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t px-4 py-3 z-40 max-w-3xl mx-auto w-full">
+          <Button
+            className="w-full h-12 gap-2 text-sm font-semibold"
+            onClick={tab === 'clues' ? openNewClue : openNewValue}
+          >
+            <Plus className="w-4 h-4" />
+            {tab === 'clues' ? '加线索 A' : '加价值观 B'}
+          </Button>
+        </div>
+      )}
 
-      <ThreadForm
-        open={formOpen}
-        onClose={() => setFormOpen(false)}
-        onSave={handleSave}
-        editThread={editingThread}
-        allCharacters={allCharacters}
-        allTags={allTags}
+      <ClueForm
+        open={clueOpen}
+        onClose={() => setClueOpen(false)}
+        edit={editClue}
+        onSave={data => {
+          if (editClue) updateClue(editClue.id, data);
+          else addClue(data);
+        }}
       />
 
-      <AIPromptModal open={aiOpen} onClose={() => setAiOpen(false)} threads={threads} />
+      <ValueForm
+        open={valueOpen}
+        onClose={() => setValueOpen(false)}
+        edit={editValue}
+        onSave={data => {
+          if (editValue) updateValue(editValue.id, data);
+          else addValue(data);
+        }}
+      />
 
       <DataManager
         open={dataOpen}
@@ -413,16 +287,28 @@ export default function Home() {
         onExport={exportData}
         onImport={importData}
       />
+    </div>
+  );
+}
 
-      <QuickPasteSheet
-        open={quickPasteOpen}
-        onClose={() => setQuickPasteOpen(false)}
-        onSaveMany={addThreads}
-        onSaveChapters={items => {
-          for (const item of items) addChapter(item.title, item.content);
-          setTab('cycle');
-        }}
-      />
+function Stat({ n, label, tone }: { n: number; label: string; tone: 'amber' | 'violet' | 'sky' }) {
+  const color =
+    tone === 'amber' ? 'text-amber-400 bg-amber-500/8' :
+    tone === 'violet' ? 'text-violet-300 bg-violet-500/8' :
+    'text-sky-400 bg-sky-500/8';
+  return (
+    <div className={`rounded-lg p-2 text-center ${color}`}>
+      <div className="text-lg font-bold leading-none">{n}</div>
+      <div className="text-[10px] text-muted-foreground mt-1">{label}</div>
+    </div>
+  );
+}
+
+function Empty({ tip }: { tip: string }) {
+  return (
+    <div className="py-16 text-center text-muted-foreground">
+      <p className="text-sm">还是空的</p>
+      <p className="text-xs mt-2 opacity-80 px-6 leading-relaxed">{tip}</p>
     </div>
   );
 }
