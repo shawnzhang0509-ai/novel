@@ -41,6 +41,18 @@ export function useThreads() {
     return newThread.id;
   }, []);
 
+  const addThreads = useCallback((partials: Omit<Thread, 'id' | 'createdAt' | 'updatedAt'>[]) => {
+    if (partials.length === 0) return;
+    const now = Date.now();
+    const newOnes: Thread[] = partials.map((partial) => ({
+      ...partial,
+      id: generateId(),
+      createdAt: now,
+      updatedAt: now,
+    }));
+    setThreads(prev => [...newOnes, ...prev]);
+  }, []);
+
   const updateThread = useCallback((id: string, updates: Partial<Omit<Thread, 'id' | 'createdAt'>>) => {
     setThreads(prev =>
       prev.map(t =>
@@ -99,6 +111,7 @@ export function useThreads() {
     threads,
     stats,
     addThread,
+    addThreads,
     updateThread,
     deleteThread,
     reorderThreads,

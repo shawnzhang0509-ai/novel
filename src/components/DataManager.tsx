@@ -32,7 +32,7 @@ export default function DataManager({ open, onClose, onExport, onImport }: DataM
           <div className="space-y-2">
             <div className="text-sm font-medium">导出备份</div>
             <p className="text-xs text-muted-foreground">
-              所有线索数据会导出为 JSON 文件，建议定期备份到网盘。
+              导出章节循环、线索、粒子连线为 JSON，建议定期备份到网盘。
             </p>
             <Button variant="outline" className="w-full h-11 gap-2" onClick={onExport}>
               <Download className="w-4 h-4" />
@@ -43,7 +43,7 @@ export default function DataManager({ open, onClose, onExport, onImport }: DataM
           <div className="space-y-2">
             <div className="text-sm font-medium">导入恢复</div>
             <p className="text-xs text-muted-foreground">
-              选择之前导出的 JSON 文件，会覆盖当前所有数据。
+              选择备份 JSON（新版整库或旧版线索数组），会覆盖当前所有数据。
             </p>
             <label className="flex items-center justify-center w-full h-11 border-2 border-dashed border-border rounded-lg cursor-pointer hover:bg-accent transition-colors">
               <Upload className="w-4 h-4 mr-2" />
