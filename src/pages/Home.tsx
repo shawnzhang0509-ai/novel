@@ -1,12 +1,14 @@
 import { useState, useMemo } from 'react';
 import type { Thread, ThreadStatus } from '@/types/thread';
 import { statusLabels } from '@/types/thread';
-import { useThreads } from '@/hooks/useThreads';
+import { useNovelStore } from '@/hooks/useNovelStore';
 import ThreadCard from '@/components/ThreadCard';
 import ThreadForm from '@/components/ThreadForm';
 import AIPromptModal from '@/components/AIPromptModal';
 import DataManager from '@/components/DataManager';
 import QuickPasteSheet from '@/components/QuickPasteSheet';
+import ChapterCyclePanel from '@/components/ChapterCyclePanel';
+import ParticleSea from '@/components/ParticleSea';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -27,7 +29,11 @@ import {
   Trash2,
   Users,
   Tag,
+  RefreshCw,
+  Orbit,
 } from 'lucide-react';
+
+type MainTab = 'threads' | 'cycle' | 'sea';
 
 const statusOrder: ThreadStatus[] = ['buried', 'pending', 'resolved', 'abandoned'];
 const statusHeaderIcons = {
@@ -40,15 +46,24 @@ const statusHeaderIcons = {
 export default function Home() {
   const {
     threads,
+    chapters,
+    links,
     stats,
     addThread,
     addThreads,
     updateThread,
     deleteThread,
+    addChapter,
+    updateChapter,
+    deleteChapter,
+    addLink,
+    deleteLink,
     exportData,
     importData,
-  } = useThreads();
+  } = useNovelStore();
 
+  const [tab, setTab] = useState<MainTab>('cycle');
+  const [writeNonce, setWriteNonce] = useState(0);
   const [formOpen, setFormOpen] = useState(false);
   const [editingThread, setEditingThread] = useState<Thread | null>(null);
   const [aiOpen, setAiOpen] = useState(false);
@@ -65,17 +80,20 @@ export default function Home() {
     abandoned: true,
   });
 
-  const allCharacters = useMemo(() =>
-    Array.from(new Set(threads.flatMap(t => t.characters))).sort(),
-  [threads]);
+  const allCharacters = useMemo(
+    () => Array.from(new Set(threads.flatMap(t => t.characters))).sort(),
+    [threads]
+  );
 
-  const allTags = useMemo(() =>
-    Array.from(new Set(threads.flatMap(t => t.tags))).sort(),
-  [threads]);
+  const allTags = useMemo(
+    () => Array.from(new Set(threads.flatMap(t => t.tags))).sort(),
+    [threads]
+  );
 
   const filteredThreads = useMemo(() => {
     return threads.filter(t => {
-      const matchesSearch = !search.trim() ||
+      const matchesSearch =
+        !search.trim() ||
         t.title.includes(search) ||
         t.content.includes(search) ||
         t.notes.includes(search) ||
@@ -126,7 +144,6 @@ export default function Home() {
 
   return (
     <div className="min-h-dvh bg-background text-foreground flex flex-col max-w-3xl mx-auto">
-      {/* Header */}
       <header className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b px-4 pt-3 pb-2">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
@@ -142,149 +159,214 @@ export default function Home() {
 
         <div className="grid grid-cols-4 gap-2 mb-3">
           <div className="bg-primary/5 rounded-lg p-2 text-center">
-            <div className="text-lg font-bold leading-none">{stats.total}</div>
-            <div className="text-[10px] text-muted-foreground mt-1">总线索</div>
+            <div className="text-lg font-bold leading-none">{stats.chapters}</div>
+            <div className="text-[10px] text-muted-foreground mt-1">章节循环</div>
           </div>
           <div className="bg-amber-500/8 rounded-lg p-2 text-center">
             <div className="text-lg font-bold leading-none text-amber-500">{stats.buried}</div>
-            <div className="text-[10px] text-muted-foreground mt-1">未回收</div>
+            <div className="text-[10px] text-muted-foreground mt-1">未回收线索</div>
           </div>
-          <div className="bg-violet-500/8 rounded-lg p-2 text-center">
-            <div className="text-lg font-bold leading-none text-violet-500">{stats.pending}</div>
-            <div className="text-[10px] text-muted-foreground mt-1">待定</div>
+          <div className="bg-sky-500/8 rounded-lg p-2 text-center">
+            <div className="text-lg font-bold leading-none text-sky-400">{stats.links}</div>
+            <div className="text-[10px] text-muted-foreground mt-1">嫁接连线</div>
           </div>
-          <div className="bg-emerald-500/8 rounded-lg p-2 text-center">
-            <div className="text-lg font-bold leading-none text-emerald-500">{stats.resolved}</div>
-            <div className="text-[10px] text-muted-foreground mt-1">已回收</div>
+          <div className="bg-rose-500/8 rounded-lg p-2 text-center">
+            <div className="text-lg font-bold leading-none text-rose-400">{stats.driftD}</div>
+            <div className="text-[10px] text-muted-foreground mt-1">需收束 D</div>
           </div>
         </div>
 
-        <div className="relative mb-2">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="搜索线索、章节、内容..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="h-9 pl-9 pr-8 text-sm"
-          />
-          {search && (
-            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2">
-              <X className="w-3.5 h-3.5 text-muted-foreground" />
-            </button>
-          )}
-        </div>
-
-        {/* Quick filters */}
-        {(allTags.length > 0 || allCharacters.length > 0) && (
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {hasActiveFilters && (
+        <div className="grid grid-cols-3 gap-1.5 mb-2 p-1 rounded-xl bg-muted/40 border border-border/60">
+          {(
+            [
+              { key: 'cycle' as const, label: '章节循环', icon: RefreshCw },
+              { key: 'sea' as const, label: '粒子海', icon: Orbit },
+              { key: 'threads' as const, label: '线索台账', icon: Layers },
+            ] as const
+          ).map(item => {
+            const Icon = item.icon;
+            const active = tab === item.key;
+            return (
               <button
-                onClick={() => { setActiveFilterTag(null); setActiveFilterChar(null); setSearch(''); }}
-                className="shrink-0 text-[11px] px-2 py-1 rounded-full bg-destructive/10 text-destructive border border-destructive/20"
+                key={item.key}
+                type="button"
+                onClick={() => setTab(item.key)}
+                className={`flex items-center justify-center gap-1.5 py-2 rounded-lg text-xs font-medium transition-colors ${
+                  active
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
               >
-                清除筛选
+                <Icon className="w-3.5 h-3.5" />
+                {item.label}
               </button>
+            );
+          })}
+        </div>
+
+        {tab === 'threads' && (
+          <>
+            <div className="relative mb-2">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <Input
+                placeholder="搜索线索、章节、内容..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="h-9 pl-9 pr-8 text-sm"
+              />
+              {search && (
+                <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2">
+                  <X className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+              )}
+            </div>
+
+            {(allTags.length > 0 || allCharacters.length > 0) && (
+              <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+                {hasActiveFilters && (
+                  <button
+                    onClick={() => {
+                      setActiveFilterTag(null);
+                      setActiveFilterChar(null);
+                      setSearch('');
+                    }}
+                    className="shrink-0 text-[11px] px-2 py-1 rounded-full bg-destructive/10 text-destructive border border-destructive/20"
+                  >
+                    清除筛选
+                  </button>
+                )}
+                {allCharacters.slice(0, 6).map(c => (
+                  <button
+                    key={c}
+                    onClick={() => setActiveFilterChar(activeFilterChar === c ? null : c)}
+                    className={`shrink-0 inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border transition-colors ${
+                      activeFilterChar === c
+                        ? 'bg-secondary text-secondary-foreground border-secondary'
+                        : 'bg-background text-muted-foreground border-border'
+                    }`}
+                  >
+                    <Users className="w-3 h-3" />
+                    {c}
+                  </button>
+                ))}
+                {allTags.slice(0, 6).map(t => (
+                  <button
+                    key={t}
+                    onClick={() => setActiveFilterTag(activeFilterTag === t ? null : t)}
+                    className={`shrink-0 inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border transition-colors ${
+                      activeFilterTag === t
+                        ? 'bg-primary/15 text-primary border-primary/30'
+                        : 'bg-background text-muted-foreground border-border'
+                    }`}
+                  >
+                    <Tag className="w-3 h-3" />
+                    {t}
+                  </button>
+                ))}
+              </div>
             )}
-            {allCharacters.slice(0, 6).map(c => (
-              <button
-                key={c}
-                onClick={() => setActiveFilterChar(activeFilterChar === c ? null : c)}
-                className={`shrink-0 inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border transition-colors ${
-                  activeFilterChar === c
-                    ? 'bg-secondary text-secondary-foreground border-secondary'
-                    : 'bg-background text-muted-foreground border-border'
-                }`}
-              >
-                <Users className="w-3 h-3" />
-                {c}
-              </button>
-            ))}
-            {allTags.slice(0, 6).map(t => (
-              <button
-                key={t}
-                onClick={() => setActiveFilterTag(activeFilterTag === t ? null : t)}
-                className={`shrink-0 inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border transition-colors ${
-                  activeFilterTag === t
-                    ? 'bg-primary/15 text-primary border-primary/30'
-                    : 'bg-background text-muted-foreground border-border'
-                }`}
-              >
-                <Tag className="w-3 h-3" />
-                {t}
-              </button>
-            ))}
-          </div>
+          </>
         )}
       </header>
 
-      {/* Main content */}
       <main className="flex-1 px-4 py-3 pb-24">
-        {filteredThreads.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-            <Layers className="w-10 h-10 mb-3 opacity-30" />
-            <p className="text-sm">还没有线索</p>
-            <p className="text-xs mt-1 opacity-70">点击右下角按钮埋下第一个伏笔</p>
-          </div>
+        {tab === 'cycle' && (
+          <ChapterCyclePanel
+            chapters={chapters}
+            onAddChapter={addChapter}
+            onUpdateChapter={updateChapter}
+            onDeleteChapter={deleteChapter}
+            writeNonce={writeNonce}
+          />
         )}
 
-        {statusOrder.map(status => {
-          const list = grouped[status];
-          if (list.length === 0 && !hasActiveFilters) return null;
-          if (list.length === 0 && hasActiveFilters) return null;
-          const isCollapsed = collapsed[status];
-          const Icon = statusHeaderIcons[status];
+        {tab === 'sea' && (
+          <ParticleSea
+            chapters={chapters}
+            threads={threads}
+            links={links}
+            onAddLink={addLink}
+            onDeleteLink={deleteLink}
+          />
+        )}
 
-          return (
-            <div key={status} className="mb-4">
-              <button
-                onClick={() => toggleCollapse(status)}
-                className="flex items-center justify-between w-full py-2 text-left group"
-              >
-                <div className="flex items-center gap-2">
-                  <Icon className={`w-4 h-4 ${
-                    status === 'buried' ? 'text-amber-500' :
-                    status === 'resolved' ? 'text-emerald-500' :
-                    status === 'abandoned' ? 'text-slate-400' :
-                    'text-violet-500'
-                  }`} />
-                  <span className="text-sm font-semibold">{statusLabels[status]}</span>
-                  <Badge variant="secondary" className="text-[10px] h-5 px-1.5">
-                    {list.length}
-                  </Badge>
-                </div>
-                {isCollapsed ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronUp className="w-4 h-4 text-muted-foreground" />}
-              </button>
+        {tab === 'threads' && (
+          <>
+            {filteredThreads.length === 0 && (
+              <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                <Layers className="w-10 h-10 mb-3 opacity-30" />
+                <p className="text-sm">还没有线索</p>
+                <p className="text-xs mt-1 opacity-70">用「粘贴」丢章节/对话，或点「埋新坑」</p>
+              </div>
+            )}
 
-              {!isCollapsed && (
-                <div className="space-y-1">
-                  {list.map(thread => (
-                    <div key={thread.id} className="relative group/card">
-                      <ThreadCard thread={thread} onClick={openEdit} />
-                      <button
-                        onClick={() => {
-                          if (confirm('确定删除这条线索？')) deleteThread(thread.id);
-                        }}
-                        className="absolute top-2 right-2 p-1.5 rounded-md bg-destructive/90 text-destructive-foreground opacity-0 group-hover/card:opacity-100 transition-opacity"
-                        title="删除"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+            {statusOrder.map(status => {
+              const list = grouped[status];
+              if (list.length === 0) return null;
+              const isCollapsed = collapsed[status];
+              const Icon = statusHeaderIcons[status];
+
+              return (
+                <div key={status} className="mb-4">
+                  <button
+                    onClick={() => toggleCollapse(status)}
+                    className="flex items-center justify-between w-full py-2 text-left group"
+                  >
+                    <div className="flex items-center gap-2">
+                      <Icon
+                        className={`w-4 h-4 ${
+                          status === 'buried'
+                            ? 'text-amber-500'
+                            : status === 'resolved'
+                              ? 'text-emerald-500'
+                              : status === 'abandoned'
+                                ? 'text-slate-400'
+                                : 'text-violet-500'
+                        }`}
+                      />
+                      <span className="text-sm font-semibold">{statusLabels[status]}</span>
+                      <Badge variant="secondary" className="text-[10px] h-5 px-1.5">
+                        {list.length}
+                      </Badge>
                     </div>
-                  ))}
+                    {isCollapsed ? (
+                      <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                    ) : (
+                      <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                    )}
+                  </button>
+
+                  {!isCollapsed && (
+                    <div className="space-y-1">
+                      {list.map(thread => (
+                        <div key={thread.id} className="relative group/card">
+                          <ThreadCard thread={thread} onClick={openEdit} />
+                          <button
+                            onClick={() => {
+                              if (confirm('确定删除这条线索？')) deleteThread(thread.id);
+                            }}
+                            className="absolute top-2 right-2 p-1.5 rounded-md bg-destructive/90 text-destructive-foreground opacity-0 group-hover/card:opacity-100 transition-opacity"
+                            title="删除"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          );
-        })}
+              );
+            })}
+          </>
+        )}
       </main>
 
-      {/* Bottom action bar */}
       <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t px-4 py-3 z-40 flex items-center gap-2 max-w-3xl mx-auto w-full">
         <Button
           variant="secondary"
           className="h-12 px-3 shrink-0 gap-1.5 text-xs font-medium"
           onClick={() => setQuickPasteOpen(true)}
-          title="粘贴整章或 GPT 对话，少填表"
+          title="粘贴整章或 GPT 对话"
         >
           <ClipboardPaste className="w-4 h-4 shrink-0" />
           <span className="max-[340px]:sr-only">粘贴</span>
@@ -292,10 +374,17 @@ export default function Home() {
         <Button
           variant="default"
           className="flex-1 h-12 gap-2 text-sm font-semibold shadow-lg min-w-0"
-          onClick={openNew}
+          onClick={() => {
+            if (tab === 'cycle') {
+              setWriteNonce(n => n + 1);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+              openNew();
+            }
+          }}
         >
           <Plus className="w-4 h-4 shrink-0" />
-          埋新坑
+          {tab === 'cycle' ? '写新章' : '埋新坑'}
         </Button>
         <Button
           variant="outline"
@@ -316,11 +405,7 @@ export default function Home() {
         allTags={allTags}
       />
 
-      <AIPromptModal
-        open={aiOpen}
-        onClose={() => setAiOpen(false)}
-        threads={threads}
-      />
+      <AIPromptModal open={aiOpen} onClose={() => setAiOpen(false)} threads={threads} />
 
       <DataManager
         open={dataOpen}
@@ -333,6 +418,10 @@ export default function Home() {
         open={quickPasteOpen}
         onClose={() => setQuickPasteOpen(false)}
         onSaveMany={addThreads}
+        onSaveChapters={items => {
+          for (const item of items) addChapter(item.title, item.content);
+          setTab('cycle');
+        }}
       />
     </div>
   );

@@ -15,18 +15,27 @@ interface QuickPasteSheetProps {
   open: boolean;
   onClose: () => void;
   onSaveMany: (items: Omit<Thread, 'id' | 'createdAt' | 'updatedAt'>[]) => void;
+  /** 章节模式也可直接进入「章节循环」 */
+  onSaveChapters?: (items: { title: string; content: string }[]) => void;
 }
 
 const TAG_CHAPTER = '章节存档';
 const TAG_GPT = 'GPT对话';
 
-export default function QuickPasteSheet({ open, onClose, onSaveMany }: QuickPasteSheetProps) {
+export default function QuickPasteSheet({
+  open,
+  onClose,
+  onSaveMany,
+  onSaveChapters,
+}: QuickPasteSheetProps) {
   const [kind, setKind] = useState<PasteKind>('chapter');
   const [raw, setRaw] = useState('');
   const [manualTitle, setManualTitle] = useState('');
   const [chapterHint, setChapterHint] = useState('');
   const [splitChapters, setSplitChapters] = useState(false);
   const [gptLink, setGptLink] = useState('');
+  /** 章节贴进循环工作流，而不是仅存为线索 */
+  const [asCycleChapter, setAsCycleChapter] = useState(true);
 
   const reset = () => {
     setRaw('');
@@ -35,6 +44,7 @@ export default function QuickPasteSheet({ open, onClose, onSaveMany }: QuickPast
     setSplitChapters(false);
     setKind('chapter');
     setGptLink('');
+    setAsCycleChapter(true);
   };
 
   const handleClose = () => {
@@ -105,6 +115,38 @@ export default function QuickPasteSheet({ open, onClose, onSaveMany }: QuickPast
   };
 
   const handleSave = () => {
+    if (kind === 'chapter' && asCycleChapter && onSaveChapters) {
+      const text = raw.trim();
+      if (!text) return;
+      if (splitChapters) {
+        const parts = splitByChapterHeadings(text);
+        if (parts.length > 1) {
+          onSaveChapters(
+            parts.map((p, i) => ({
+              title: p.title || manualTitle.trim() || `第 ${i + 1} 段`,
+              content: p.content || p.title,
+            }))
+          );
+          handleClose();
+          return;
+        }
+      }
+      const title =
+        manualTitle.trim() ||
+        guessTitleFromFirstLine(text) ||
+        chapterHint.trim() ||
+        `章节 · ${new Date().toLocaleString('zh-CN', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' })}`;
+      let content = text;
+      const first = guessTitleFromFirstLine(text);
+      if (!manualTitle.trim() && first) {
+        const rest = text.replace(/\r\n/g, '\n').trimStart().slice(first.length).replace(/^\n+/, '');
+        if (rest.trim()) content = rest.trim();
+      }
+      onSaveChapters([{ title, content }]);
+      handleClose();
+      return;
+    }
+
     const items = buildItems();
     if (items.length === 0) return;
     onSaveMany(items);
@@ -164,19 +206,34 @@ export default function QuickPasteSheet({ open, onClose, onSaveMany }: QuickPast
           </div>
 
           {kind === 'chapter' && (
-            <label className="flex items-start gap-3 p-3 rounded-lg border border-border bg-muted/30 cursor-pointer">
-              <Checkbox
-                checked={splitChapters}
-                onCheckedChange={v => setSplitChapters(v === true)}
-                className="mt-0.5"
-              />
-              <div className="text-sm leading-snug">
-                <div className="font-medium">按章节标题拆成多条</div>
-                <div className="text-xs text-muted-foreground mt-1">
-                  识别以「第×章」「Chapter 1」等单独成行开头的段落；识别不到则仍为一条。
+            <>
+              <label className="flex items-start gap-3 p-3 rounded-lg border border-border bg-muted/30 cursor-pointer">
+                <Checkbox
+                  checked={asCycleChapter}
+                  onCheckedChange={v => setAsCycleChapter(v === true)}
+                  className="mt-0.5"
+                />
+                <div className="text-sm leading-snug">
+                  <div className="font-medium">进入「章节循环」</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    推荐：保存后走 解构 → 收束；取消则只当普通线索存档。
+                  </div>
                 </div>
-              </div>
-            </label>
+              </label>
+              <label className="flex items-start gap-3 p-3 rounded-lg border border-border bg-muted/30 cursor-pointer">
+                <Checkbox
+                  checked={splitChapters}
+                  onCheckedChange={v => setSplitChapters(v === true)}
+                  className="mt-0.5"
+                />
+                <div className="text-sm leading-snug">
+                  <div className="font-medium">按章节标题拆成多条</div>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    识别以「第×章」「Chapter 1」等单独成行开头的段落；识别不到则仍为一条。
+                  </div>
+                </div>
+              </label>
+            </>
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
