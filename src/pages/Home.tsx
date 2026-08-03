@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useSimpleStore } from '@/hooks/useSimpleStore';
 import type { Clue, ValueItem } from '@/types/simple';
 import { clueStatusLabel } from '@/types/simple';
+import { isOpenableUrl, normalizeManuscriptUrl } from '@/lib/url';
 import ClueForm from '@/components/ClueForm';
 import ValueForm from '@/components/ValueForm';
 import ParticleSea from '@/components/ParticleSea';
@@ -42,15 +43,16 @@ export default function Home() {
 
   const [tab, setTab] = useState<Tab>('clues');
   const [sheetDraft, setSheetDraft] = useState(sheetUrl);
-
-  useEffect(() => {
-    setSheetDraft(sheetUrl);
-  }, [sheetUrl]);
+  const [linkHint, setLinkHint] = useState('');
   const [dataOpen, setDataOpen] = useState(false);
   const [clueOpen, setClueOpen] = useState(false);
   const [valueOpen, setValueOpen] = useState(false);
   const [editClue, setEditClue] = useState<Clue | null>(null);
   const [editValue, setEditValue] = useState<ValueItem | null>(null);
+
+  useEffect(() => {
+    setSheetDraft(sheetUrl);
+  }, [sheetUrl]);
 
   const openNewClue = () => {
     setEditClue(null);
@@ -61,6 +63,35 @@ export default function Home() {
     setValueOpen(true);
   };
 
+  const saveSheetLink = () => {
+    const url = normalizeManuscriptUrl(sheetDraft);
+    setSheetDraft(url);
+    setSheetUrl(url);
+    if (!url) {
+      setLinkHint('先粘贴链接再保存');
+      return '';
+    }
+    if (!isOpenableUrl(url)) {
+      setLinkHint('链接不太对，请贴完整的 https://… 地址');
+      return '';
+    }
+    setLinkHint('已保存到本机');
+    window.setTimeout(() => setLinkHint(''), 1600);
+    return url;
+  };
+
+  const openManuscript = () => {
+    const url = saveSheetLink();
+    if (!url) return;
+    const a = document.createElement('a');
+    a.href = url;
+    a.target = '_blank';
+    a.rel = 'noopener noreferrer';
+    a.click();
+  };
+
+  const savedOpenable = isOpenableUrl(sheetUrl);
+
   return (
     <div className="min-h-dvh bg-background text-foreground flex flex-col max-w-3xl mx-auto">
       <header className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b px-4 pt-3 pb-2 space-y-3">
@@ -69,39 +100,65 @@ export default function Home() {
             <BookOpen className="w-5 h-5 text-primary" />
             <h1 className="text-lg font-bold tracking-tight">草蛇灰线</h1>
           </div>
-          <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => setDataOpen(true)}>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-8 w-8 p-0"
+            onClick={() => setDataOpen(true)}
+            title="备份 / 恢复"
+          >
             <Database className="w-4 h-4 text-muted-foreground" />
           </Button>
         </div>
 
-        {/* 一份正文 ↔ 多条线索 */}
         <div className="rounded-xl border border-border/80 bg-muted/20 p-3 space-y-2">
-          <div className="text-xs font-medium text-muted-foreground">正文（Google Sheet / Doc）</div>
+          <div className="text-xs font-medium text-muted-foreground">正文链接（Google Doc 或 Sheet）</div>
           <p className="text-[11px] text-muted-foreground/90 leading-relaxed">
-            一个链接对应整篇文章；下面的 A 线索可以挂很多条，详情写在线索里。
+            在浏览器打开 Google 文档 → 复制地址栏链接 → 粘贴到这里。Sheet 打不开就用
+            Google 文档 Doc。一个链接对很多条线索；点「打开 Google」可直接进去。
           </p>
+          <Input
+            value={sheetDraft}
+            onChange={e => {
+              setSheetDraft(e.target.value);
+              setLinkHint('');
+            }}
+            onBlur={() => {
+              const url = normalizeManuscriptUrl(sheetDraft);
+              setSheetDraft(url);
+              setSheetUrl(url);
+            }}
+            placeholder="https://docs.google.com/document/d/…"
+            className="h-10 text-sm"
+            inputMode="url"
+            autoCapitalize="off"
+            autoCorrect="off"
+            spellCheck={false}
+          />
           <div className="flex gap-2">
-            <Input
-              value={sheetDraft}
-              onChange={e => setSheetDraft(e.target.value)}
-              onBlur={() => setSheetUrl(sheetDraft.trim())}
-              placeholder="粘贴表格或文档链接…"
-              className="h-10 text-sm"
-              inputMode="url"
-            />
+            <Button variant="outline" className="h-10 flex-1 text-sm" onClick={() => saveSheetLink()}>
+              保存链接
+            </Button>
             <Button
-              variant="secondary"
-              className="h-10 px-3 shrink-0"
-              disabled={!sheetDraft.trim()}
-              onClick={() => {
-                const url = sheetDraft.trim();
-                setSheetUrl(url);
-                window.open(url, '_blank', 'noopener,noreferrer');
-              }}
+              className="h-10 flex-1 gap-1.5 text-sm"
+              disabled={!normalizeManuscriptUrl(sheetDraft) && !savedOpenable}
+              onClick={openManuscript}
             >
               <ExternalLink className="w-4 h-4" />
+              打开 Google
             </Button>
           </div>
+          {savedOpenable && (
+            <a
+              href={normalizeManuscriptUrl(sheetUrl)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block text-[11px] text-sky-400/95 underline underline-offset-2 break-all leading-relaxed"
+            >
+              {normalizeManuscriptUrl(sheetUrl)}
+            </a>
+          )}
+          {linkHint && <p className="text-[11px] text-muted-foreground">{linkHint}</p>}
         </div>
 
         <div className="grid grid-cols-3 gap-2">
