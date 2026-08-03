@@ -1,14 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useSimpleStore } from '@/hooks/useSimpleStore';
-import type { Clue, ValueItem } from '@/types/simple';
+import type { Article, Clue, ValueItem } from '@/types/simple';
 import { clueStatusLabel } from '@/types/simple';
 import { isOpenableUrl, normalizeManuscriptUrl } from '@/lib/url';
+import ArticleForm from '@/components/ArticleForm';
 import ClueForm from '@/components/ClueForm';
 import ValueForm from '@/components/ValueForm';
 import ParticleSea from '@/components/ParticleSea';
 import DataManager from '@/components/DataManager';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import {
   BookOpen,
   Database,
@@ -19,18 +19,21 @@ import {
   Check,
 } from 'lucide-react';
 
-type Tab = 'clues' | 'values' | 'sea';
+type Tab = 'articles' | 'values' | 'sea';
 
 export default function Home() {
   const {
     store,
-    sheetUrl,
+    articles,
+    articleMap,
     clues,
     values,
     links,
     stats,
-    setSheetUrl,
-    addClue,
+    addArticleWithClues,
+    updateArticle,
+    deleteArticle,
+    addClueNames,
     updateClue,
     deleteClue,
     addValue,
@@ -43,56 +46,25 @@ export default function Home() {
     replaceStore,
   } = useSimpleStore();
 
-  const [tab, setTab] = useState<Tab>('clues');
-  const [sheetDraft, setSheetDraft] = useState(sheetUrl);
-  const [linkHint, setLinkHint] = useState('');
+  const [tab, setTab] = useState<Tab>('articles');
   const [dataOpen, setDataOpen] = useState(false);
+  const [articleOpen, setArticleOpen] = useState(false);
+  const [editArticle, setEditArticle] = useState<Article | null>(null);
   const [clueOpen, setClueOpen] = useState(false);
-  const [valueOpen, setValueOpen] = useState(false);
   const [editClue, setEditClue] = useState<Clue | null>(null);
+  const [valueOpen, setValueOpen] = useState(false);
   const [editValue, setEditValue] = useState<ValueItem | null>(null);
 
-  useEffect(() => {
-    setSheetDraft(sheetUrl);
-  }, [sheetUrl]);
-
-  const openNewClue = () => {
-    setEditClue(null);
-    setClueOpen(true);
-  };
-  const openNewValue = () => {
-    setEditValue(null);
-    setValueOpen(true);
-  };
-
-  const saveSheetLink = () => {
-    const url = normalizeManuscriptUrl(sheetDraft);
-    setSheetDraft(url);
-    setSheetUrl(url);
-    if (!url) {
-      setLinkHint('先粘贴链接再保存');
-      return '';
+  const cluesByArticle = useMemo(() => {
+    const map = new Map<string, Clue[]>();
+    for (const c of clues) {
+      const key = c.articleId || '__none__';
+      const list = map.get(key) || [];
+      list.push(c);
+      map.set(key, list);
     }
-    if (!isOpenableUrl(url)) {
-      setLinkHint('链接不太对，请贴完整的 https://… 地址');
-      return '';
-    }
-    setLinkHint('已保存到本机');
-    window.setTimeout(() => setLinkHint(''), 1600);
-    return url;
-  };
-
-  const openManuscript = () => {
-    const url = saveSheetLink();
-    if (!url) return;
-    const a = document.createElement('a');
-    a.href = url;
-    a.target = '_blank';
-    a.rel = 'noopener noreferrer';
-    a.click();
-  };
-
-  const savedOpenable = isOpenableUrl(sheetUrl);
+    return map;
+  }, [clues]);
 
   return (
     <div className="min-h-dvh bg-background text-foreground flex flex-col max-w-3xl mx-auto">
@@ -107,72 +79,26 @@ export default function Home() {
             variant="ghost"
             className="h-8 w-8 p-0"
             onClick={() => setDataOpen(true)}
-            title="备份 / 恢复"
+            title="备份 / 云同步"
           >
             <Database className="w-4 h-4 text-muted-foreground" />
           </Button>
         </div>
 
-        <div className="rounded-xl border border-border/80 bg-muted/20 p-3 space-y-2">
-          <div className="text-xs font-medium text-muted-foreground">正文链接（Google Doc 或 Sheet）</div>
-          <p className="text-[11px] text-muted-foreground/90 leading-relaxed">
-            在浏览器打开 Google 文档 → 复制地址栏链接 → 粘贴到这里。Sheet 打不开就用
-            Google 文档 Doc。一个链接对很多条线索；点「打开 Google」可直接进去。
-          </p>
-          <Input
-            value={sheetDraft}
-            onChange={e => {
-              setSheetDraft(e.target.value);
-              setLinkHint('');
-            }}
-            onBlur={() => {
-              const url = normalizeManuscriptUrl(sheetDraft);
-              setSheetDraft(url);
-              setSheetUrl(url);
-            }}
-            placeholder="https://docs.google.com/document/d/…"
-            className="h-10 text-sm"
-            inputMode="url"
-            autoCapitalize="off"
-            autoCorrect="off"
-            spellCheck={false}
-          />
-          <div className="flex gap-2">
-            <Button variant="outline" className="h-10 flex-1 text-sm" onClick={() => saveSheetLink()}>
-              保存链接
-            </Button>
-            <Button
-              className="h-10 flex-1 gap-1.5 text-sm"
-              disabled={!normalizeManuscriptUrl(sheetDraft) && !savedOpenable}
-              onClick={openManuscript}
-            >
-              <ExternalLink className="w-4 h-4" />
-              打开 Google
-            </Button>
-          </div>
-          {savedOpenable && (
-            <a
-              href={normalizeManuscriptUrl(sheetUrl)}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block text-[11px] text-sky-400/95 underline underline-offset-2 break-all leading-relaxed"
-            >
-              {normalizeManuscriptUrl(sheetUrl)}
-            </a>
-          )}
-          {linkHint && <p className="text-[11px] text-muted-foreground">{linkHint}</p>}
-        </div>
+        <p className="text-[11px] text-muted-foreground leading-relaxed">
+          一篇 Google 文章挂多条线索名；粒子海里可跨文章连线（A–A / B–B）。
+        </p>
 
         <div className="grid grid-cols-3 gap-2">
-          <Stat n={stats.open} label="未回收 A" tone="amber" />
-          <Stat n={stats.values} label="价值观 B" tone="violet" />
-          <Stat n={stats.links} label="连线" tone="sky" />
+          <Stat n={stats.articles} label="文章" tone="sky" />
+          <Stat n={stats.open} label="未回收线索" tone="amber" />
+          <Stat n={stats.links} label="连线" tone="violet" />
         </div>
 
         <div className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-muted/40 border border-border/60">
           {(
             [
-              { key: 'clues' as const, label: 'A 线索' },
+              { key: 'articles' as const, label: '文章/线索' },
               { key: 'values' as const, label: 'B 价值观' },
               { key: 'sea' as const, label: '粒子海', icon: true },
             ] as const
@@ -195,76 +121,131 @@ export default function Home() {
       </header>
 
       <main className="flex-1 px-4 py-3 pb-24">
-        {tab === 'clues' && (
-          <div className="space-y-2">
-            {clues.length === 0 && (
-              <Empty tip="点下方「加线索」：标题 + 详情即可。正文链接在顶部，一条文章对多条线索。" />
+        {tab === 'articles' && (
+          <div className="space-y-4">
+            {articles.length === 0 && (
+              <Empty tip="点下方「加文章」：贴 Google 链接、写标题、加几条线索名即可。" />
             )}
-            {clues.map(c => (
-              <button
-                key={c.id}
-                type="button"
-                onClick={() => {
-                  setEditClue(c);
-                  setClueOpen(true);
-                }}
-                className="w-full text-left rounded-xl border border-border bg-card/60 px-3 py-3 active:scale-[0.99] transition-transform"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div className="min-w-0">
-                    <div className="text-sm font-semibold truncate">{c.title}</div>
-                    {(c.detail || c.note) && (
-                      <p className="text-xs text-muted-foreground mt-1 line-clamp-3 whitespace-pre-wrap">
-                        {c.detail || c.note}
-                      </p>
+            {articles.map(a => {
+              const list = cluesByArticle.get(a.id) || [];
+              return (
+                <section key={a.id} className="rounded-xl border border-border bg-card/50 overflow-hidden">
+                  <div className="px-3 py-2.5 border-b border-border/70 flex items-start justify-between gap-2">
+                    <button
+                      type="button"
+                      className="text-left min-w-0 flex-1"
+                      onClick={() => {
+                        setEditArticle(a);
+                        setArticleOpen(true);
+                      }}
+                    >
+                      <div className="text-sm font-semibold truncate">{a.title}</div>
+                      {a.sheetUrl ? (
+                        <div className="text-[11px] text-muted-foreground truncate mt-0.5">{a.sheetUrl}</div>
+                      ) : (
+                        <div className="text-[11px] text-amber-400/80 mt-0.5">尚未粘贴 Google 链接</div>
+                      )}
+                    </button>
+                    <div className="flex items-center gap-0.5 shrink-0">
+                      {isOpenableUrl(a.sheetUrl) && (
+                        <a
+                          href={normalizeManuscriptUrl(a.sheetUrl)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1.5 rounded-md text-sky-400 hover:bg-sky-500/10"
+                          onClick={e => e.stopPropagation()}
+                          title="打开 Google"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      )}
+                      <button
+                        type="button"
+                        className="p-1.5 rounded-md text-muted-foreground hover:text-destructive"
+                        onClick={() => {
+                          if (confirm('删除这篇文章及其线索？')) deleteArticle(a.id);
+                        }}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                  <ul className="divide-y divide-border/50">
+                    {list.length === 0 && (
+                      <li className="px-3 py-3 text-xs text-muted-foreground">还没有线索名，点文章标题添加</li>
                     )}
-                  </div>
-                  <div className="flex items-center gap-1 shrink-0">
-                    <span
-                      className={`text-[10px] px-2 py-0.5 rounded-full border ${
-                        c.status === 'open'
-                          ? 'border-amber-500/40 text-amber-400'
-                          : 'border-emerald-500/40 text-emerald-400'
-                      }`}
-                    >
-                      {clueStatusLabel[c.status]}
-                    </span>
-                    <button
-                      type="button"
-                      className="p-1.5 rounded-md text-muted-foreground hover:text-destructive"
-                      onClick={e => {
-                        e.stopPropagation();
-                        if (confirm('删除这条线索？')) deleteClue(c.id);
-                      }}
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-                {c.status === 'open' && (
-                  <div className="mt-2">
-                    <button
-                      type="button"
-                      className="inline-flex items-center gap-1 text-[11px] text-emerald-400/90"
-                      onClick={e => {
-                        e.stopPropagation();
-                        updateClue(c.id, { status: 'done' });
-                      }}
-                    >
-                      <Check className="w-3 h-3" />
-                      标为已回收
-                    </button>
-                  </div>
-                )}
-              </button>
-            ))}
+                    {list.map(c => (
+                      <li key={c.id} className="px-3 py-2.5 flex items-center gap-2">
+                        <button
+                          type="button"
+                          className="flex-1 text-left min-w-0"
+                          onClick={() => {
+                            setEditClue(c);
+                            setClueOpen(true);
+                          }}
+                        >
+                          <span className="text-sm font-medium truncate block">{c.title}</span>
+                        </button>
+                        <span
+                          className={`text-[10px] px-2 py-0.5 rounded-full border shrink-0 ${
+                            c.status === 'open'
+                              ? 'border-amber-500/40 text-amber-400'
+                              : 'border-emerald-500/40 text-emerald-400'
+                          }`}
+                        >
+                          {clueStatusLabel[c.status]}
+                        </span>
+                        {c.status === 'open' && (
+                          <button
+                            type="button"
+                            className="p-1 text-emerald-400/90"
+                            title="标为已回收"
+                            onClick={() => updateClue(c.id, { status: 'done' })}
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="p-1 text-muted-foreground hover:text-destructive"
+                          onClick={() => {
+                            if (confirm('删除这条线索？')) deleteClue(c.id);
+                          }}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              );
+            })}
+
+            {(cluesByArticle.get('__none__') || []).length > 0 && (
+              <section className="rounded-xl border border-dashed border-border px-3 py-2">
+                <div className="text-xs text-muted-foreground mb-2">未挂文章的旧线索</div>
+                {(cluesByArticle.get('__none__') || []).map(c => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className="block w-full text-left text-sm py-1.5"
+                    onClick={() => {
+                      setEditClue(c);
+                      setClueOpen(true);
+                    }}
+                  >
+                    {c.title}
+                  </button>
+                ))}
+              </section>
+            )}
           </div>
         )}
 
         {tab === 'values' && (
           <div className="space-y-2">
             {values.length === 0 && (
-              <Empty tip="加几个你想贯穿全书的价值观/主题，例如「正义的代价」。" />
+              <Empty tip="加几个贯穿全书的价值观/主题。" />
             )}
             {values.map(v => (
               <button
@@ -274,7 +255,7 @@ export default function Home() {
                   setEditValue(v);
                   setValueOpen(true);
                 }}
-                className="w-full text-left rounded-xl border border-border bg-card/60 px-3 py-3 active:scale-[0.99] transition-transform"
+                className="w-full text-left rounded-xl border border-border bg-card/60 px-3 py-3"
               >
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
@@ -288,10 +269,10 @@ export default function Home() {
                   </div>
                   <button
                     type="button"
-                    className="p-1.5 rounded-md text-muted-foreground hover:text-destructive shrink-0"
+                    className="p-1.5 text-muted-foreground hover:text-destructive"
                     onClick={e => {
                       e.stopPropagation();
-                      if (confirm('删除这条价值观？')) deleteValue(v.id);
+                      if (confirm('删除？')) deleteValue(v.id);
                     }}
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -307,6 +288,7 @@ export default function Home() {
             clues={clues}
             values={values}
             links={links}
+            articleMap={articleMap}
             onAddLink={addLink}
             onDeleteLink={deleteLink}
           />
@@ -317,22 +299,43 @@ export default function Home() {
         <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t px-4 py-3 z-40 max-w-3xl mx-auto w-full">
           <Button
             className="w-full h-12 gap-2 text-sm font-semibold"
-            onClick={tab === 'clues' ? openNewClue : openNewValue}
+            onClick={() => {
+              if (tab === 'articles') {
+                setEditArticle(null);
+                setArticleOpen(true);
+              } else {
+                setEditValue(null);
+                setValueOpen(true);
+              }
+            }}
           >
             <Plus className="w-4 h-4" />
-            {tab === 'clues' ? '加线索 A' : '加价值观 B'}
+            {tab === 'articles' ? '加文章（可多条线索）' : '加价值观 B'}
           </Button>
         </div>
       )}
+
+      <ArticleForm
+        open={articleOpen}
+        onClose={() => setArticleOpen(false)}
+        edit={editArticle}
+        existingClueCount={editArticle ? (cluesByArticle.get(editArticle.id) || []).length : 0}
+        onCreate={addArticleWithClues}
+        onUpdate={data => {
+          if (editArticle) updateArticle(editArticle.id, data);
+        }}
+        onAddNames={names => {
+          if (editArticle) addClueNames(editArticle.id, names);
+        }}
+      />
 
       <ClueForm
         open={clueOpen}
         onClose={() => setClueOpen(false)}
         edit={editClue}
-        sheetUrl={sheetUrl}
+        articleTitle={editClue ? articleMap.get(editClue.articleId)?.title : undefined}
         onSave={data => {
           if (editClue) updateClue(editClue.id, data);
-          else addClue(data);
         }}
       />
 
