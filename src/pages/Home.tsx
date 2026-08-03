@@ -74,15 +74,18 @@ export default function Home() {
           </Button>
         </div>
 
-        {/* Google Sheet — single place for the novel itself */}
+        {/* 一份正文 ↔ 多条线索 */}
         <div className="rounded-xl border border-border/80 bg-muted/20 p-3 space-y-2">
-          <div className="text-xs font-medium text-muted-foreground">正文（Google Sheet）</div>
+          <div className="text-xs font-medium text-muted-foreground">正文（Google Sheet / Doc）</div>
+          <p className="text-[11px] text-muted-foreground/90 leading-relaxed">
+            一个链接对应整篇文章；下面的 A 线索可以挂很多条，详情写在线索里。
+          </p>
           <div className="flex gap-2">
             <Input
               value={sheetDraft}
               onChange={e => setSheetDraft(e.target.value)}
               onBlur={() => setSheetUrl(sheetDraft.trim())}
-              placeholder="粘贴你的表格链接…"
+              placeholder="粘贴表格或文档链接…"
               className="h-10 text-sm"
               inputMode="url"
             />
@@ -136,7 +139,7 @@ export default function Home() {
         {tab === 'clues' && (
           <div className="space-y-2">
             {clues.length === 0 && (
-              <Empty tip="点下方「加线索」记一条伏笔即可，别写长文。" />
+              <Empty tip="点下方「加线索」：标题 + 详情即可。正文链接在顶部，一条文章对多条线索。" />
             )}
             {clues.map(c => (
               <button
@@ -151,8 +154,10 @@ export default function Home() {
                 <div className="flex items-start justify-between gap-2">
                   <div className="min-w-0">
                     <div className="text-sm font-semibold truncate">{c.title}</div>
-                    {c.note && (
-                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{c.note}</p>
+                    {(c.detail || c.note) && (
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-3 whitespace-pre-wrap">
+                        {c.detail || c.note}
+                      </p>
                     )}
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
@@ -265,6 +270,7 @@ export default function Home() {
         open={clueOpen}
         onClose={() => setClueOpen(false)}
         edit={editClue}
+        sheetUrl={sheetUrl}
         onSave={data => {
           if (editClue) updateClue(editClue.id, data);
           else addClue(data);
