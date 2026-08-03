@@ -621,7 +621,7 @@ export default function ParticleSea({
   const selected = useMemo(() => {
     if (!selectedId) return null;
     const c = clues.find(x => x.id === selectedId);
-    if (c) return { id: c.id, kind: 'clue' as const, title: c.title, note: c.note };
+    if (c) return { id: c.id, kind: 'clue' as const, title: c.title, note: c.detail || c.note };
     const v = values.find(x => x.id === selectedId);
     if (v) return { id: v.id, kind: 'value' as const, title: v.title, note: v.note };
     return null;
