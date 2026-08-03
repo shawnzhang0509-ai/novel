@@ -255,6 +255,10 @@ export function useSimpleStore() {
     });
   }, []);
 
+  const replaceStore = useCallback((next: SimpleStore) => {
+    setStore(finalizeStore(next));
+  }, []);
+
   const stats = useMemo(
     () => ({
       clues: store.clues.length,
@@ -266,6 +270,7 @@ export function useSimpleStore() {
   );
 
   return {
+    store,
     sheetUrl: store.sheetUrl,
     clues: store.clues,
     values: store.values,
@@ -282,5 +287,6 @@ export function useSimpleStore() {
     deleteLink,
     exportData,
     importData,
+    replaceStore,
   };
 }

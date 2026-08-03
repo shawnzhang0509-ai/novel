@@ -23,6 +23,7 @@ type Tab = 'clues' | 'values' | 'sea';
 
 export default function Home() {
   const {
+    store,
     sheetUrl,
     clues,
     values,
@@ -39,6 +40,7 @@ export default function Home() {
     deleteLink,
     exportData,
     importData,
+    replaceStore,
   } = useSimpleStore();
 
   const [tab, setTab] = useState<Tab>('clues');
@@ -347,8 +349,10 @@ export default function Home() {
       <DataManager
         open={dataOpen}
         onClose={() => setDataOpen(false)}
+        store={store}
         onExport={exportData}
         onImport={importData}
+        onReplaceStore={replaceStore}
       />
     </div>
   );
