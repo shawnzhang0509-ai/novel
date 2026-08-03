@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import type { Clue, GraftLink, ParticleKind, SimpleStore, ValueItem } from '@/types/simple';
-import { isSimpleStore } from '@/types/simple';
+import { isGoogleDocLink, isSimpleStore, normalizeClue } from '@/types/simple';
 
 const STORAGE_KEY = 'snake-simple-v3';
 const V2_KEY = 'snake-novel-v2';
@@ -14,18 +14,36 @@ function empty(): SimpleStore {
   return { version: 3, sheetUrl: '', clues: [], values: [], links: [] };
 }
 
+function finalizeStore(store: SimpleStore): SimpleStore {
+  let sheetUrl = store.sheetUrl.trim();
+  const clues = store.clues.map(c => {
+    const note = typeof (c as Clue).note === 'string' ? (c as Clue).note : '';
+    if (!sheetUrl && isGoogleDocLink(note)) {
+      sheetUrl = note.trim();
+    }
+    // also salvage google link stuck in detail by mistake
+    const detail = typeof (c as Clue & { detail?: string }).detail === 'string'
+      ? (c as Clue).detail
+      : '';
+    if (!sheetUrl && isGoogleDocLink(detail)) {
+      sheetUrl = detail.trim();
+    }
+    return normalizeClue(c as Clue);
+  });
+  return { ...store, sheetUrl, clues };
+}
+
 function migrate(): SimpleStore {
   try {
     const v3 = localStorage.getItem(STORAGE_KEY);
     if (v3) {
       const parsed = JSON.parse(v3) as unknown;
-      if (isSimpleStore(parsed)) return parsed;
+      if (isSimpleStore(parsed)) return finalizeStore(parsed);
     }
   } catch {
     /* continue */
   }
 
-  // pull titles from older stores so nothing feels "lost"
   const store = empty();
   try {
     const v2raw = localStorage.getItem(V2_KEY);
@@ -46,14 +64,17 @@ function migrate(): SimpleStore {
               updatedAt: t.updatedAt || Date.now(),
             });
           } else {
-            store.clues.push({
-              id: t.id,
-              title: t.title,
-              note: t.content || t.notes || '',
-              status: t.status === 'resolved' ? 'done' : 'open',
-              createdAt: t.createdAt || Date.now(),
-              updatedAt: t.updatedAt || Date.now(),
-            });
+            store.clues.push(
+              normalizeClue({
+                id: t.id,
+                title: t.title,
+                note: t.content || t.notes || '',
+                detail: '',
+                status: t.status === 'resolved' ? 'done' : 'open',
+                createdAt: t.createdAt || Date.now(),
+                updatedAt: t.updatedAt || Date.now(),
+              })
+            );
           }
         }
       }
@@ -84,7 +105,7 @@ function migrate(): SimpleStore {
           }
         }
       }
-      return store;
+      return finalizeStore(store);
     }
   } catch {
     /* continue */
@@ -93,23 +114,34 @@ function migrate(): SimpleStore {
   try {
     const v1raw = localStorage.getItem(V1_KEY);
     if (v1raw) {
-      const threads = JSON.parse(v1raw) as { id: string; title: string; content?: string; notes?: string; status?: string; createdAt?: number; updatedAt?: number }[];
+      const threads = JSON.parse(v1raw) as {
+        id: string;
+        title: string;
+        content?: string;
+        notes?: string;
+        status?: string;
+        createdAt?: number;
+        updatedAt?: number;
+      }[];
       if (Array.isArray(threads)) {
-        store.clues = threads.map(t => ({
-          id: t.id,
-          title: t.title,
-          note: t.content || t.notes || '',
-          status: (t.status === 'resolved' ? 'done' : 'open') as Clue['status'],
-          createdAt: t.createdAt || Date.now(),
-          updatedAt: t.updatedAt || Date.now(),
-        }));
+        store.clues = threads.map(t =>
+          normalizeClue({
+            id: t.id,
+            title: t.title,
+            note: t.content || t.notes || '',
+            detail: '',
+            status: t.status === 'resolved' ? 'done' : 'open',
+            createdAt: t.createdAt || Date.now(),
+            updatedAt: t.updatedAt || Date.now(),
+          })
+        );
       }
     }
   } catch {
     /* ignore */
   }
 
-  return store;
+  return finalizeStore(store);
 }
 
 export function useSimpleStore() {
@@ -123,19 +155,24 @@ export function useSimpleStore() {
     setStore(prev => ({ ...prev, sheetUrl }));
   }, []);
 
-  const addClue = useCallback((partial: Pick<Clue, 'title' | 'note' | 'status'>) => {
+  const addClue = useCallback((partial: Pick<Clue, 'title' | 'detail' | 'note' | 'status'>) => {
     const now = Date.now();
-    const clue: Clue = { ...partial, id: id(), createdAt: now, updatedAt: now };
+    const clue = normalizeClue({ ...partial, id: id(), createdAt: now, updatedAt: now });
     setStore(prev => ({ ...prev, clues: [clue, ...prev.clues] }));
     return clue.id;
   }, []);
 
-  const updateClue = useCallback((cid: string, updates: Partial<Pick<Clue, 'title' | 'note' | 'status'>>) => {
-    setStore(prev => ({
-      ...prev,
-      clues: prev.clues.map(c => (c.id === cid ? { ...c, ...updates, updatedAt: Date.now() } : c)),
-    }));
-  }, []);
+  const updateClue = useCallback(
+    (cid: string, updates: Partial<Pick<Clue, 'title' | 'detail' | 'note' | 'status'>>) => {
+      setStore(prev => ({
+        ...prev,
+        clues: prev.clues.map(c =>
+          c.id === cid ? normalizeClue({ ...c, ...updates, updatedAt: Date.now() }) : c
+        ),
+      }));
+    },
+    []
+  );
 
   const deleteClue = useCallback((cid: string) => {
     setStore(prev => ({
@@ -207,7 +244,7 @@ export function useSimpleStore() {
         try {
           const parsed = JSON.parse(String(e.target?.result)) as unknown;
           if (!isSimpleStore(parsed)) throw new Error('请导入本工具导出的 v3 JSON');
-          setStore(parsed);
+          setStore(finalizeStore(parsed));
           resolve({ success: true, count: parsed.clues.length + parsed.values.length });
         } catch (err) {
           resolve({ success: false, count: 0, error: (err as Error).message });
