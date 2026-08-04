@@ -64,3 +64,29 @@ export async function cloudPush(
     return { ok: false, error: (err as Error).message };
   }
 }
+
+export async function cloudHealth(): Promise<{
+  ok: boolean;
+  redis: 'ready' | 'missing' | 'unknown';
+  hint?: string;
+}> {
+  try {
+    const res = await fetch('/api/health');
+    if (!res.ok) return { ok: false, redis: 'unknown', hint: `HTTP ${res.status}` };
+    const json = (await res.json()) as {
+      redis?: 'ready' | 'missing';
+      hint?: string;
+    };
+    return {
+      ok: true,
+      redis: json.redis === 'ready' ? 'ready' : json.redis === 'missing' ? 'missing' : 'unknown',
+      hint: json.hint,
+    };
+  } catch {
+    return {
+      ok: false,
+      redis: 'unknown',
+      hint: '本地开发没有 /api。请部署到 Vercel，或运行 npx vercel dev',
+    };
+  }
+}

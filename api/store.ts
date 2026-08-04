@@ -1,14 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { Redis } from '@upstash/redis';
+import { getRedisFromEnv } from './_redis';
 
 const CODE_RE = /^[a-zA-Z0-9_-]{8,64}$/;
-
-function getRedis(): Redis | null {
-  const url = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
-  const token = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
-  if (!url || !token) return null;
-  return new Redis({ url, token });
-}
 
 function syncCode(req: VercelRequest): string | null {
   const header = req.headers['x-sync-code'];
@@ -28,10 +21,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(204).end();
   }
 
-  const redis = getRedis();
+  const redis = getRedisFromEnv();
   if (!redis) {
     return res.status(503).json({
-      error: '云端未配置：请在 Vercel 环境变量里设置 UPSTASH_REDIS_REST_URL 与 UPSTASH_REDIS_REST_TOKEN',
+      error:
+        '云端未配置：novel 项目的 Production 环境变量里还没有 Redis。请到 Vercel → novel → Settings → Environment Variables 确认有 UPSTASH_REDIS_REST_URL / TOKEN（或 KV_REST_API_URL / TOKEN），勾选 Production，然后对 Production Redeploy。',
     });
   }
 
@@ -40,7 +34,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: '同步码无效（8–64 位字母数字）' });
   }
 
-  const key = `grass-snake:v3:${code}`;
+  const key = `grass-snake:v4:${code}`;
 
   try {
     if (req.method === 'GET') {
@@ -53,7 +47,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (!body || typeof body !== 'object') {
         return res.status(400).json({ error: '缺少 JSON 正文' });
       }
-      // store whole app snapshot as one Redis value (not a SQL DB)
       await redis.set(key, body);
       return res.status(200).json({ ok: true, savedAt: Date.now() });
     }
