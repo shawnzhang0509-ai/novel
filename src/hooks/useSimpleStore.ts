@@ -1,8 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { Clue, GraftLink, ParticleKind, SimpleStore, ValueItem } from '@/types/simple';
-import { isGoogleDocLink, isSimpleStore, normalizeClue } from '@/types/simple';
+import type { Article, Clue, GraftLink, ParticleKind, SimpleStore, ValueItem } from '@/types/simple';
+import { isSimpleStore, normalizeArticle, normalizeClue } from '@/types/simple';
+import { normalizeManuscriptUrl } from '@/lib/url';
 
-const STORAGE_KEY = 'snake-simple-v3';
+const STORAGE_KEY = 'snake-simple-v4';
+const V3_KEY = 'snake-simple-v3';
 const V2_KEY = 'snake-novel-v2';
 const V1_KEY = 'snake-threads-v1';
 
@@ -11,34 +13,78 @@ function id(): string {
 }
 
 function empty(): SimpleStore {
-  return { version: 3, sheetUrl: '', clues: [], values: [], links: [] };
+  return { version: 4, articles: [], clues: [], values: [], links: [] };
 }
 
-function finalizeStore(store: SimpleStore): SimpleStore {
-  let sheetUrl = store.sheetUrl.trim();
-  const clues = store.clues.map(c => {
-    const note = typeof (c as Clue).note === 'string' ? (c as Clue).note : '';
-    if (!sheetUrl && isGoogleDocLink(note)) {
-      sheetUrl = note.trim();
-    }
-    // also salvage google link stuck in detail by mistake
-    const detail = typeof (c as Clue & { detail?: string }).detail === 'string'
-      ? (c as Clue).detail
-      : '';
-    if (!sheetUrl && isGoogleDocLink(detail)) {
-      sheetUrl = detail.trim();
-    }
-    return normalizeClue(c as Clue);
+function finalizeStore(raw: SimpleStore): SimpleStore {
+  const articles = (raw.articles || []).map(a => normalizeArticle(a));
+  const articleIds = new Set(articles.map(a => a.id));
+  const clues = (raw.clues || []).map(c => {
+    const n = normalizeClue(c);
+    if (n.articleId && !articleIds.has(n.articleId)) n.articleId = '';
+    return n;
   });
-  return { ...store, sheetUrl, clues };
+  return {
+    version: 4,
+    articles,
+    clues,
+    values: raw.values || [],
+    links: raw.links || [],
+  };
+}
+
+function migrateFromV3(parsed: {
+  sheetUrl?: string;
+  clues?: Partial<Clue>[];
+  values?: ValueItem[];
+  links?: GraftLink[];
+}): SimpleStore {
+  const store = empty();
+  store.values = parsed.values || [];
+  store.links = parsed.links || [];
+  const sheetUrl = normalizeManuscriptUrl(parsed.sheetUrl || '');
+  let articleId = '';
+  if (sheetUrl || (parsed.clues && parsed.clues.length > 0)) {
+    articleId = id();
+    store.articles.push(
+      normalizeArticle({
+        id: articleId,
+        title: '文章 1',
+        sheetUrl,
+        createdAt: Date.now(),
+        updatedAt: Date.now(),
+      })
+    );
+  }
+  store.clues = (parsed.clues || []).map(c =>
+    normalizeClue({
+      ...c,
+      id: c.id || id(),
+      title: c.title || '未命名线索',
+      articleId: articleId,
+    })
+  );
+  return finalizeStore(store);
 }
 
 function migrate(): SimpleStore {
   try {
-    const v3 = localStorage.getItem(STORAGE_KEY);
+    const v4 = localStorage.getItem(STORAGE_KEY);
+    if (v4) {
+      const parsed = JSON.parse(v4) as unknown;
+      if (isSimpleStore(parsed) && (parsed as SimpleStore).version === 4) {
+        return finalizeStore(parsed as SimpleStore);
+      }
+    }
+  } catch {
+    /* continue */
+  }
+
+  try {
+    const v3 = localStorage.getItem(V3_KEY);
     if (v3) {
       const parsed = JSON.parse(v3) as unknown;
-      if (isSimpleStore(parsed)) return finalizeStore(parsed);
+      if (isSimpleStore(parsed)) return migrateFromV3(parsed as SimpleStore);
     }
   } catch {
     /* continue */
@@ -49,9 +95,11 @@ function migrate(): SimpleStore {
     const v2raw = localStorage.getItem(V2_KEY);
     if (v2raw) {
       const v2 = JSON.parse(v2raw) as {
-        threads?: { id: string; title: string; content?: string; notes?: string; status?: string; tags?: string[]; createdAt?: number; updatedAt?: number }[];
-        links?: { id: string; fromId: string; toId: string; fromKind?: string; toKind?: string; label?: string; createdAt?: number }[];
+        threads?: { id: string; title: string; content?: string; notes?: string; status?: string; tags?: string[] }[];
+        links?: GraftLink[];
       };
+      const articleId = id();
+      store.articles.push(normalizeArticle({ id: articleId, title: '文章 1', sheetUrl: '' }));
       if (Array.isArray(v2.threads)) {
         for (const t of v2.threads) {
           const isValue = (t.tags || []).some(tag => /价值|主题|观/.test(tag));
@@ -60,51 +108,22 @@ function migrate(): SimpleStore {
               id: t.id,
               title: t.title,
               note: t.content || t.notes || '',
-              createdAt: t.createdAt || Date.now(),
-              updatedAt: t.updatedAt || Date.now(),
+              createdAt: Date.now(),
+              updatedAt: Date.now(),
             });
           } else {
             store.clues.push(
               normalizeClue({
                 id: t.id,
                 title: t.title,
-                note: t.content || t.notes || '',
-                detail: '',
+                articleId,
                 status: t.status === 'resolved' ? 'done' : 'open',
-                createdAt: t.createdAt || Date.now(),
-                updatedAt: t.updatedAt || Date.now(),
               })
             );
           }
         }
       }
-      if (Array.isArray(v2.links)) {
-        for (const l of v2.links) {
-          const fromClue = store.clues.some(c => c.id === l.fromId);
-          const toClue = store.clues.some(c => c.id === l.toId);
-          const fromVal = store.values.some(v => v.id === l.fromId);
-          const toVal = store.values.some(v => v.id === l.toId);
-          if (fromClue && toClue) {
-            store.links.push({
-              id: l.id,
-              kind: 'clue',
-              fromId: l.fromId,
-              toId: l.toId,
-              label: l.label || '',
-              createdAt: l.createdAt || Date.now(),
-            });
-          } else if (fromVal && toVal) {
-            store.links.push({
-              id: l.id,
-              kind: 'value',
-              fromId: l.fromId,
-              toId: l.toId,
-              label: l.label || '',
-              createdAt: l.createdAt || Date.now(),
-            });
-          }
-        }
-      }
+      if (Array.isArray(v2.links)) store.links = v2.links;
       return finalizeStore(store);
     }
   } catch {
@@ -114,25 +133,16 @@ function migrate(): SimpleStore {
   try {
     const v1raw = localStorage.getItem(V1_KEY);
     if (v1raw) {
-      const threads = JSON.parse(v1raw) as {
-        id: string;
-        title: string;
-        content?: string;
-        notes?: string;
-        status?: string;
-        createdAt?: number;
-        updatedAt?: number;
-      }[];
+      const threads = JSON.parse(v1raw) as { id: string; title: string; status?: string }[];
+      const articleId = id();
+      store.articles.push(normalizeArticle({ id: articleId, title: '文章 1', sheetUrl: '' }));
       if (Array.isArray(threads)) {
         store.clues = threads.map(t =>
           normalizeClue({
             id: t.id,
             title: t.title,
-            note: t.content || t.notes || '',
-            detail: '',
+            articleId,
             status: t.status === 'resolved' ? 'done' : 'open',
-            createdAt: t.createdAt || Date.now(),
-            updatedAt: t.updatedAt || Date.now(),
           })
         );
       }
@@ -151,19 +161,89 @@ export function useSimpleStore() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(store));
   }, [store]);
 
-  const setSheetUrl = useCallback((sheetUrl: string) => {
-    setStore(prev => ({ ...prev, sheetUrl }));
+  const addArticleWithClues = useCallback(
+    (input: { title: string; sheetUrl: string; clueNames: string[] }) => {
+      const now = Date.now();
+      const articleId = id();
+      const article = normalizeArticle({
+        id: articleId,
+        title: input.title,
+        sheetUrl: normalizeManuscriptUrl(input.sheetUrl),
+        createdAt: now,
+        updatedAt: now,
+      });
+      const names = input.clueNames.map(n => n.trim()).filter(Boolean);
+      const clues = names.map((title, i) =>
+        normalizeClue({
+          id: id() + i.toString(36),
+          articleId,
+          title,
+          status: 'open',
+          createdAt: now,
+          updatedAt: now,
+        })
+      );
+      setStore(prev => ({
+        ...prev,
+        articles: [article, ...prev.articles],
+        clues: [...clues, ...prev.clues],
+      }));
+      return articleId;
+    },
+    []
+  );
+
+  const updateArticle = useCallback((aid: string, updates: Partial<Pick<Article, 'title' | 'sheetUrl'>>) => {
+    setStore(prev => ({
+      ...prev,
+      articles: prev.articles.map(a =>
+        a.id === aid
+          ? normalizeArticle({
+              ...a,
+              ...updates,
+              sheetUrl: updates.sheetUrl !== undefined ? normalizeManuscriptUrl(updates.sheetUrl) : a.sheetUrl,
+              updatedAt: Date.now(),
+            })
+          : a
+      ),
+    }));
   }, []);
 
-  const addClue = useCallback((partial: Pick<Clue, 'title' | 'detail' | 'note' | 'status'>) => {
+  const deleteArticle = useCallback((aid: string) => {
+    setStore(prev => {
+      const clueIds = new Set(prev.clues.filter(c => c.articleId === aid).map(c => c.id));
+      return {
+        ...prev,
+        articles: prev.articles.filter(a => a.id !== aid),
+        clues: prev.clues.filter(c => c.articleId !== aid),
+        links: prev.links.filter(
+          l => !(l.kind === 'clue' && (clueIds.has(l.fromId) || clueIds.has(l.toId)))
+        ),
+      };
+    });
+  }, []);
+
+  const addClueNames = useCallback((articleId: string, names: string[]) => {
     const now = Date.now();
-    const clue = normalizeClue({ ...partial, id: id(), createdAt: now, updatedAt: now });
-    setStore(prev => ({ ...prev, clues: [clue, ...prev.clues] }));
-    return clue.id;
+    const clues = names
+      .map(n => n.trim())
+      .filter(Boolean)
+      .map((title, i) =>
+        normalizeClue({
+          id: id() + i.toString(36),
+          articleId,
+          title,
+          status: 'open',
+          createdAt: now,
+          updatedAt: now,
+        })
+      );
+    if (clues.length === 0) return;
+    setStore(prev => ({ ...prev, clues: [...clues, ...prev.clues] }));
   }, []);
 
   const updateClue = useCallback(
-    (cid: string, updates: Partial<Pick<Clue, 'title' | 'detail' | 'note' | 'status'>>) => {
+    (cid: string, updates: Partial<Pick<Clue, 'title' | 'status' | 'articleId' | 'detail' | 'note'>>) => {
       setStore(prev => ({
         ...prev,
         clues: prev.clues.map(c =>
@@ -243,9 +323,13 @@ export function useSimpleStore() {
       reader.onload = e => {
         try {
           const parsed = JSON.parse(String(e.target?.result)) as unknown;
-          if (!isSimpleStore(parsed)) throw new Error('请导入本工具导出的 v3 JSON');
-          setStore(finalizeStore(parsed));
-          resolve({ success: true, count: parsed.clues.length + parsed.values.length });
+          if (!isSimpleStore(parsed)) throw new Error('请导入本工具导出的 JSON');
+          const next =
+            (parsed as SimpleStore).version === 4
+              ? finalizeStore(parsed as SimpleStore)
+              : migrateFromV3(parsed as SimpleStore);
+          setStore(next);
+          resolve({ success: true, count: next.clues.length + next.values.length });
         } catch (err) {
           resolve({ success: false, count: 0, error: (err as Error).message });
         }
@@ -256,11 +340,14 @@ export function useSimpleStore() {
   }, []);
 
   const replaceStore = useCallback((next: SimpleStore) => {
-    setStore(finalizeStore(next));
+    const normalized =
+      next.version === 4 ? finalizeStore(next) : migrateFromV3(next as unknown as SimpleStore);
+    setStore(normalized);
   }, []);
 
   const stats = useMemo(
     () => ({
+      articles: store.articles.length,
       clues: store.clues.length,
       open: store.clues.filter(c => c.status === 'open').length,
       values: store.values.length,
@@ -269,15 +356,24 @@ export function useSimpleStore() {
     [store]
   );
 
+  const articleMap = useMemo(() => {
+    const m = new Map<string, Article>();
+    for (const a of store.articles) m.set(a.id, a);
+    return m;
+  }, [store.articles]);
+
   return {
     store,
-    sheetUrl: store.sheetUrl,
+    articles: store.articles,
+    articleMap,
     clues: store.clues,
     values: store.values,
     links: store.links,
     stats,
-    setSheetUrl,
-    addClue,
+    addArticleWithClues,
+    updateArticle,
+    deleteArticle,
+    addClueNames,
     updateClue,
     deleteClue,
     addValue,

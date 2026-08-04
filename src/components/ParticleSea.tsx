@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import type { Clue, GraftLink, ParticleKind, ValueItem } from '@/types/simple';
+import type { Article, Clue, GraftLink, ParticleKind, ValueItem } from '@/types/simple';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Link2, Unlink, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react';
@@ -8,6 +8,7 @@ interface ParticleSeaProps {
   clues: Clue[];
   values: ValueItem[];
   links: GraftLink[];
+  articleMap?: Map<string, Article>;
   onAddLink: (kind: ParticleKind, fromId: string, toId: string, label?: string) => boolean | null;
   onDeleteLink: (id: string) => void;
 }
@@ -73,6 +74,7 @@ export default function ParticleSea({
   clues,
   values,
   links,
+  articleMap,
   onAddLink,
   onDeleteLink,
 }: ParticleSeaProps) {
@@ -621,11 +623,19 @@ export default function ParticleSea({
   const selected = useMemo(() => {
     if (!selectedId) return null;
     const c = clues.find(x => x.id === selectedId);
-    if (c) return { id: c.id, kind: 'clue' as const, title: c.title, note: c.detail || c.note };
+    if (c) {
+      const art = c.articleId ? articleMap?.get(c.articleId) : undefined;
+      return {
+        id: c.id,
+        kind: 'clue' as const,
+        title: c.title,
+        note: art ? `文章：${art.title}` : c.note || '线索（可跨文章连线）',
+      };
+    }
     const v = values.find(x => x.id === selectedId);
     if (v) return { id: v.id, kind: 'value' as const, title: v.title, note: v.note };
     return null;
-  }, [selectedId, clues, values]);
+  }, [selectedId, clues, values, articleMap]);
 
   const related = links.filter(l => l.fromId === selectedId || l.toId === selectedId);
 
@@ -656,9 +666,9 @@ export default function ParticleSea({
         <div>
           <div className="text-sm font-semibold">粒子海</div>
           <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">
-            背景尘埃是虚空星点（跟镜头一起缩放）。琥珀 A · 紫 B。
-            <span className="text-foreground/80"> 从粒子拖到另一个可连线</span>
-            ；或按住 <kbd className="px-1 rounded border border-border/80 bg-muted/50">Shift</kbd>/
+            琥珀 A 线索 · 紫 B 价值观。不同 Google 文章下的线索也能互连。
+            <span className="text-foreground/80"> 拖着连</span>
+            ，或按住 <kbd className="px-1 rounded border border-border/80 bg-muted/50">Shift</kbd>/
             <kbd className="px-1 rounded border border-border/80 bg-muted/50">L</kbd> 点两下。
           </p>
         </div>

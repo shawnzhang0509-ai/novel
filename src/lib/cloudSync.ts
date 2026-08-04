@@ -46,7 +46,7 @@ export async function cloudPull(code: string): Promise<{
 
 export async function cloudPush(
   code: string,
-  store: SimpleStore
+  store: SimpleStore | Record<string, unknown>
 ): Promise<{ ok: boolean; error?: string }> {
   try {
     const res = await fetch('/api/store', {
