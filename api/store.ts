@@ -40,7 +40,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(400).json({ error: '同步码无效（8–64 位字母数字）' });
   }
 
-  const key = `grass-snake:v3:${code}`;
+  const key = `grass-snake:v4:${code}`;
 
   try {
     if (req.method === 'GET') {
