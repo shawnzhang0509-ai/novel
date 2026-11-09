@@ -1,320 +1,384 @@
-import { useState, useMemo } from 'react';
-import type { Thread, ThreadStatus } from '@/types/thread';
-import { statusLabels } from '@/types/thread';
-import { useThreads } from '@/hooks/useThreads';
-import ThreadCard from '@/components/ThreadCard';
-import ThreadForm from '@/components/ThreadForm';
-import AIPromptModal from '@/components/AIPromptModal';
+import { useMemo, useState } from 'react';
+import { useSimpleStore } from '@/hooks/useSimpleStore';
+import type { Article, Clue, ValueItem } from '@/types/simple';
+import { clueStatusLabel } from '@/types/simple';
+import { isOpenableUrl, normalizeManuscriptUrl } from '@/lib/url';
+import ArticleForm from '@/components/ArticleForm';
+import ClueForm from '@/components/ClueForm';
+import ValueForm from '@/components/ValueForm';
+import ParticleSea from '@/components/ParticleSea';
 import DataManager from '@/components/DataManager';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import {
-  Plus,
-  Search,
-  Sparkles,
-  Database,
-  ChevronDown,
-  ChevronUp,
-  X,
   BookOpen,
-  Layers,
-  CheckCircle2,
-  Timer,
-  HelpCircle,
+  Database,
+  ExternalLink,
+  Plus,
+  Orbit,
   Trash2,
-  Users,
-  Tag,
+  Check,
 } from 'lucide-react';
 
-const statusOrder: ThreadStatus[] = ['buried', 'pending', 'resolved', 'abandoned'];
-const statusHeaderIcons = {
-  buried: Timer,
-  pending: HelpCircle,
-  resolved: CheckCircle2,
-  abandoned: Layers,
-};
+type Tab = 'articles' | 'values' | 'sea';
 
 export default function Home() {
   const {
-    threads,
+    store,
+    articles,
+    articleMap,
+    clues,
+    values,
+    links,
     stats,
-    addThread,
-    updateThread,
-    deleteThread,
+    addArticleWithClues,
+    updateArticle,
+    deleteArticle,
+    addClueNames,
+    updateClue,
+    deleteClue,
+    addValue,
+    updateValue,
+    deleteValue,
+    addLink,
+    deleteLink,
     exportData,
     importData,
-  } = useThreads();
+    replaceStore,
+  } = useSimpleStore();
 
-  const [formOpen, setFormOpen] = useState(false);
-  const [editingThread, setEditingThread] = useState<Thread | null>(null);
-  const [aiOpen, setAiOpen] = useState(false);
+  const [tab, setTab] = useState<Tab>('articles');
   const [dataOpen, setDataOpen] = useState(false);
+  const [articleOpen, setArticleOpen] = useState(false);
+  const [editArticle, setEditArticle] = useState<Article | null>(null);
+  const [clueOpen, setClueOpen] = useState(false);
+  const [editClue, setEditClue] = useState<Clue | null>(null);
+  const [valueOpen, setValueOpen] = useState(false);
+  const [editValue, setEditValue] = useState<ValueItem | null>(null);
 
-  const [search, setSearch] = useState('');
-  const [activeFilterTag, setActiveFilterTag] = useState<string | null>(null);
-  const [activeFilterChar, setActiveFilterChar] = useState<string | null>(null);
-  const [collapsed, setCollapsed] = useState<Record<ThreadStatus, boolean>>({
-    buried: false,
-    pending: false,
-    resolved: true,
-    abandoned: true,
-  });
-
-  const allCharacters = useMemo(() =>
-    Array.from(new Set(threads.flatMap(t => t.characters))).sort(),
-  [threads]);
-
-  const allTags = useMemo(() =>
-    Array.from(new Set(threads.flatMap(t => t.tags))).sort(),
-  [threads]);
-
-  const filteredThreads = useMemo(() => {
-    return threads.filter(t => {
-      const matchesSearch = !search.trim() ||
-        t.title.includes(search) ||
-        t.content.includes(search) ||
-        t.notes.includes(search) ||
-        t.chapterBuried.includes(search) ||
-        t.chapterResolved.includes(search);
-      const matchesTag = !activeFilterTag || t.tags.includes(activeFilterTag);
-      const matchesChar = !activeFilterChar || t.characters.includes(activeFilterChar);
-      return matchesSearch && matchesTag && matchesChar;
-    });
-  }, [threads, search, activeFilterTag, activeFilterChar]);
-
-  const grouped = useMemo(() => {
-    const map: Record<ThreadStatus, Thread[]> = {
-      buried: [],
-      resolved: [],
-      abandoned: [],
-      pending: [],
-    };
-    for (const t of filteredThreads) {
-      map[t.status].push(t);
+  const cluesByArticle = useMemo(() => {
+    const map = new Map<string, Clue[]>();
+    for (const c of clues) {
+      const key = c.articleId || '__none__';
+      const list = map.get(key) || [];
+      list.push(c);
+      map.set(key, list);
     }
     return map;
-  }, [filteredThreads]);
-
-  const toggleCollapse = (status: ThreadStatus) => {
-    setCollapsed(prev => ({ ...prev, [status]: !prev[status] }));
-  };
-
-  const openNew = () => {
-    setEditingThread(null);
-    setFormOpen(true);
-  };
-
-  const openEdit = (thread: Thread) => {
-    setEditingThread(thread);
-    setFormOpen(true);
-  };
-
-  const handleSave = (form: Omit<Thread, 'id' | 'createdAt' | 'updatedAt'>) => {
-    if (editingThread) {
-      updateThread(editingThread.id, form);
-    } else {
-      addThread(form);
-    }
-  };
-
-  const hasActiveFilters = activeFilterTag || activeFilterChar || search;
+  }, [clues]);
 
   return (
     <div className="min-h-dvh bg-background text-foreground flex flex-col max-w-3xl mx-auto">
-      {/* Header */}
-      <header className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b px-4 pt-3 pb-2">
-        <div className="flex items-center justify-between mb-3">
+      <header className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b px-4 pt-3 pb-2 space-y-3">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <BookOpen className="w-5 h-5 text-primary" />
             <h1 className="text-lg font-bold tracking-tight">草蛇灰线</h1>
           </div>
-          <div className="flex items-center gap-1.5">
-            <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => setDataOpen(true)}>
-              <Database className="w-4 h-4 text-muted-foreground" />
-            </Button>
-          </div>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-8 w-8 p-0"
+            onClick={() => setDataOpen(true)}
+            title="备份 / 云同步"
+          >
+            <Database className="w-4 h-4 text-muted-foreground" />
+          </Button>
         </div>
 
-        <div className="grid grid-cols-4 gap-2 mb-3">
-          <div className="bg-primary/5 rounded-lg p-2 text-center">
-            <div className="text-lg font-bold leading-none">{stats.total}</div>
-            <div className="text-[10px] text-muted-foreground mt-1">总线索</div>
-          </div>
-          <div className="bg-amber-500/8 rounded-lg p-2 text-center">
-            <div className="text-lg font-bold leading-none text-amber-500">{stats.buried}</div>
-            <div className="text-[10px] text-muted-foreground mt-1">未回收</div>
-          </div>
-          <div className="bg-violet-500/8 rounded-lg p-2 text-center">
-            <div className="text-lg font-bold leading-none text-violet-500">{stats.pending}</div>
-            <div className="text-[10px] text-muted-foreground mt-1">待定</div>
-          </div>
-          <div className="bg-emerald-500/8 rounded-lg p-2 text-center">
-            <div className="text-lg font-bold leading-none text-emerald-500">{stats.resolved}</div>
-            <div className="text-[10px] text-muted-foreground mt-1">已回收</div>
-          </div>
+        <p className="text-[11px] text-muted-foreground leading-relaxed">
+          一篇 Google 文章挂多条线索名；粒子海里可跨文章连线（A–A / B–B）。
+        </p>
+
+        <div className="grid grid-cols-3 gap-2">
+          <Stat n={stats.articles} label="文章" tone="sky" />
+          <Stat n={stats.open} label="未回收线索" tone="amber" />
+          <Stat n={stats.links} label="连线" tone="violet" />
         </div>
 
-        <div className="relative mb-2">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-          <Input
-            placeholder="搜索线索、章节、内容..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="h-9 pl-9 pr-8 text-sm"
-          />
-          {search && (
-            <button onClick={() => setSearch('')} className="absolute right-3 top-1/2 -translate-y-1/2">
-              <X className="w-3.5 h-3.5 text-muted-foreground" />
+        <div className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-muted/40 border border-border/60">
+          {(
+            [
+              { key: 'articles' as const, label: '文章/线索' },
+              { key: 'values' as const, label: 'B 价值观' },
+              { key: 'sea' as const, label: '粒子海', icon: true },
+            ] as const
+          ).map(item => (
+            <button
+              key={item.key}
+              type="button"
+              onClick={() => setTab(item.key)}
+              className={`flex items-center justify-center gap-1 py-2 rounded-lg text-xs font-medium transition-colors ${
+                tab === item.key
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground'
+              }`}
+            >
+              {'icon' in item && item.icon ? <Orbit className="w-3.5 h-3.5" /> : null}
+              {item.label}
             </button>
-          )}
+          ))}
         </div>
-
-        {/* Quick filters */}
-        {(allTags.length > 0 || allCharacters.length > 0) && (
-          <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
-            {hasActiveFilters && (
-              <button
-                onClick={() => { setActiveFilterTag(null); setActiveFilterChar(null); setSearch(''); }}
-                className="shrink-0 text-[11px] px-2 py-1 rounded-full bg-destructive/10 text-destructive border border-destructive/20"
-              >
-                清除筛选
-              </button>
-            )}
-            {allCharacters.slice(0, 6).map(c => (
-              <button
-                key={c}
-                onClick={() => setActiveFilterChar(activeFilterChar === c ? null : c)}
-                className={`shrink-0 inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border transition-colors ${
-                  activeFilterChar === c
-                    ? 'bg-secondary text-secondary-foreground border-secondary'
-                    : 'bg-background text-muted-foreground border-border'
-                }`}
-              >
-                <Users className="w-3 h-3" />
-                {c}
-              </button>
-            ))}
-            {allTags.slice(0, 6).map(t => (
-              <button
-                key={t}
-                onClick={() => setActiveFilterTag(activeFilterTag === t ? null : t)}
-                className={`shrink-0 inline-flex items-center gap-1 text-[11px] px-2 py-1 rounded-full border transition-colors ${
-                  activeFilterTag === t
-                    ? 'bg-primary/15 text-primary border-primary/30'
-                    : 'bg-background text-muted-foreground border-border'
-                }`}
-              >
-                <Tag className="w-3 h-3" />
-                {t}
-              </button>
-            ))}
-          </div>
-        )}
       </header>
 
-      {/* Main content */}
       <main className="flex-1 px-4 py-3 pb-24">
-        {filteredThreads.length === 0 && (
-          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-            <Layers className="w-10 h-10 mb-3 opacity-30" />
-            <p className="text-sm">还没有线索</p>
-            <p className="text-xs mt-1 opacity-70">点击右下角按钮埋下第一个伏笔</p>
+        {tab === 'articles' && (
+          <div className="space-y-4">
+            {articles.length === 0 && (
+              <Empty tip="点下方「加文章」：贴 Google 链接、写标题、加几条线索名即可。" />
+            )}
+            {articles.map(a => {
+              const list = cluesByArticle.get(a.id) || [];
+              return (
+                <section key={a.id} className="rounded-xl border border-border bg-card/50 overflow-hidden">
+                  <div className="px-3 py-2.5 border-b border-border/70 flex items-start justify-between gap-2">
+                    <button
+                      type="button"
+                      className="text-left min-w-0 flex-1"
+                      onClick={() => {
+                        setEditArticle(a);
+                        setArticleOpen(true);
+                      }}
+                    >
+                      <div className="text-sm font-semibold truncate">{a.title}</div>
+                      {a.sheetUrl ? (
+                        <div className="text-[11px] text-muted-foreground truncate mt-0.5">{a.sheetUrl}</div>
+                      ) : (
+                        <div className="text-[11px] text-amber-400/80 mt-0.5">尚未粘贴 Google 链接</div>
+                      )}
+                    </button>
+                    <div className="flex items-center gap-0.5 shrink-0">
+                      {isOpenableUrl(a.sheetUrl) && (
+                        <a
+                          href={normalizeManuscriptUrl(a.sheetUrl)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="p-1.5 rounded-md text-sky-400 hover:bg-sky-500/10"
+                          onClick={e => e.stopPropagation()}
+                          title="打开 Google"
+                        >
+                          <ExternalLink className="w-4 h-4" />
+                        </a>
+                      )}
+                      <button
+                        type="button"
+                        className="p-1.5 rounded-md text-muted-foreground hover:text-destructive"
+                        onClick={() => {
+                          if (confirm('删除这篇文章及其线索？')) deleteArticle(a.id);
+                        }}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                  <ul className="divide-y divide-border/50">
+                    {list.length === 0 && (
+                      <li className="px-3 py-3 text-xs text-muted-foreground">还没有线索名，点文章标题添加</li>
+                    )}
+                    {list.map(c => (
+                      <li key={c.id} className="px-3 py-2.5 flex items-center gap-2">
+                        <button
+                          type="button"
+                          className="flex-1 text-left min-w-0"
+                          onClick={() => {
+                            setEditClue(c);
+                            setClueOpen(true);
+                          }}
+                        >
+                          <span className="text-sm font-medium truncate block">{c.title}</span>
+                        </button>
+                        <span
+                          className={`text-[10px] px-2 py-0.5 rounded-full border shrink-0 ${
+                            c.status === 'open'
+                              ? 'border-amber-500/40 text-amber-400'
+                              : 'border-emerald-500/40 text-emerald-400'
+                          }`}
+                        >
+                          {clueStatusLabel[c.status]}
+                        </span>
+                        {c.status === 'open' && (
+                          <button
+                            type="button"
+                            className="p-1 text-emerald-400/90"
+                            title="标为已回收"
+                            onClick={() => updateClue(c.id, { status: 'done' })}
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          className="p-1 text-muted-foreground hover:text-destructive"
+                          onClick={() => {
+                            if (confirm('删除这条线索？')) deleteClue(c.id);
+                          }}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              );
+            })}
+
+            {(cluesByArticle.get('__none__') || []).length > 0 && (
+              <section className="rounded-xl border border-dashed border-border px-3 py-2">
+                <div className="text-xs text-muted-foreground mb-2">未挂文章的旧线索</div>
+                {(cluesByArticle.get('__none__') || []).map(c => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    className="block w-full text-left text-sm py-1.5"
+                    onClick={() => {
+                      setEditClue(c);
+                      setClueOpen(true);
+                    }}
+                  >
+                    {c.title}
+                  </button>
+                ))}
+              </section>
+            )}
           </div>
         )}
 
-        {statusOrder.map(status => {
-          const list = grouped[status];
-          if (list.length === 0 && !hasActiveFilters) return null;
-          if (list.length === 0 && hasActiveFilters) return null;
-          const isCollapsed = collapsed[status];
-          const Icon = statusHeaderIcons[status];
-
-          return (
-            <div key={status} className="mb-4">
+        {tab === 'values' && (
+          <div className="space-y-2">
+            {values.length === 0 && (
+              <Empty tip="加几个贯穿全书的价值观/主题。" />
+            )}
+            {values.map(v => (
               <button
-                onClick={() => toggleCollapse(status)}
-                className="flex items-center justify-between w-full py-2 text-left group"
+                key={v.id}
+                type="button"
+                onClick={() => {
+                  setEditValue(v);
+                  setValueOpen(true);
+                }}
+                className="w-full text-left rounded-xl border border-border bg-card/60 px-3 py-3"
               >
-                <div className="flex items-center gap-2">
-                  <Icon className={`w-4 h-4 ${
-                    status === 'buried' ? 'text-amber-500' :
-                    status === 'resolved' ? 'text-emerald-500' :
-                    status === 'abandoned' ? 'text-slate-400' :
-                    'text-violet-500'
-                  }`} />
-                  <span className="text-sm font-semibold">{statusLabels[status]}</span>
-                  <Badge variant="secondary" className="text-[10px] h-5 px-1.5">
-                    {list.length}
-                  </Badge>
-                </div>
-                {isCollapsed ? <ChevronDown className="w-4 h-4 text-muted-foreground" /> : <ChevronUp className="w-4 h-4 text-muted-foreground" />}
-              </button>
-
-              {!isCollapsed && (
-                <div className="space-y-1">
-                  {list.map(thread => (
-                    <div key={thread.id} className="relative group/card">
-                      <ThreadCard thread={thread} onClick={openEdit} />
-                      <button
-                        onClick={() => {
-                          if (confirm('确定删除这条线索？')) deleteThread(thread.id);
-                        }}
-                        className="absolute top-2 right-2 p-1.5 rounded-md bg-destructive/90 text-destructive-foreground opacity-0 group-hover/card:opacity-100 transition-opacity"
-                        title="删除"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <div className="text-sm font-semibold truncate">
+                      <span className="text-violet-300 mr-1.5">B</span>
+                      {v.title}
                     </div>
-                  ))}
+                    {v.note && (
+                      <p className="text-xs text-muted-foreground mt-1 line-clamp-2">{v.note}</p>
+                    )}
+                  </div>
+                  <button
+                    type="button"
+                    className="p-1.5 text-muted-foreground hover:text-destructive"
+                    onClick={e => {
+                      e.stopPropagation();
+                      if (confirm('删除？')) deleteValue(v.id);
+                    }}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
                 </div>
-              )}
-            </div>
-          );
-        })}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {tab === 'sea' && (
+          <ParticleSea
+            clues={clues}
+            values={values}
+            links={links}
+            articleMap={articleMap}
+            onAddLink={addLink}
+            onDeleteLink={deleteLink}
+          />
+        )}
       </main>
 
-      {/* Bottom action bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t px-4 py-3 z-40 flex items-center gap-3 max-w-3xl mx-auto w-full">
-        <Button
-          variant="default"
-          className="flex-1 h-12 gap-2 text-sm font-semibold shadow-lg"
-          onClick={openNew}
-        >
-          <Plus className="w-4 h-4" />
-          埋新坑
-        </Button>
-        <Button
-          variant="outline"
-          className="h-12 px-4 gap-2 text-sm font-medium border-primary/30 text-primary"
-          onClick={() => setAiOpen(true)}
-        >
-          <Sparkles className="w-4 h-4" />
-          AI串联
-        </Button>
-      </div>
+      {tab !== 'sea' && (
+        <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur border-t px-4 py-3 z-40 max-w-3xl mx-auto w-full">
+          <Button
+            className="w-full h-12 gap-2 text-sm font-semibold"
+            onClick={() => {
+              if (tab === 'articles') {
+                setEditArticle(null);
+                setArticleOpen(true);
+              } else {
+                setEditValue(null);
+                setValueOpen(true);
+              }
+            }}
+          >
+            <Plus className="w-4 h-4" />
+            {tab === 'articles' ? '加文章（可多条线索）' : '加价值观 B'}
+          </Button>
+        </div>
+      )}
 
-      <ThreadForm
-        open={formOpen}
-        onClose={() => setFormOpen(false)}
-        onSave={handleSave}
-        editThread={editingThread}
-        allCharacters={allCharacters}
-        allTags={allTags}
+      <ArticleForm
+        open={articleOpen}
+        onClose={() => setArticleOpen(false)}
+        edit={editArticle}
+        existingClueCount={editArticle ? (cluesByArticle.get(editArticle.id) || []).length : 0}
+        onCreate={addArticleWithClues}
+        onUpdate={data => {
+          if (editArticle) updateArticle(editArticle.id, data);
+        }}
+        onAddNames={names => {
+          if (editArticle) addClueNames(editArticle.id, names);
+        }}
       />
 
-      <AIPromptModal
-        open={aiOpen}
-        onClose={() => setAiOpen(false)}
-        threads={threads}
+      <ClueForm
+        open={clueOpen}
+        onClose={() => setClueOpen(false)}
+        edit={editClue}
+        articleTitle={editClue ? articleMap.get(editClue.articleId)?.title : undefined}
+        onSave={data => {
+          if (editClue) updateClue(editClue.id, data);
+        }}
+      />
+
+      <ValueForm
+        open={valueOpen}
+        onClose={() => setValueOpen(false)}
+        edit={editValue}
+        onSave={data => {
+          if (editValue) updateValue(editValue.id, data);
+          else addValue(data);
+        }}
       />
 
       <DataManager
         open={dataOpen}
         onClose={() => setDataOpen(false)}
+        store={store}
         onExport={exportData}
         onImport={importData}
+        onReplaceStore={replaceStore}
       />
+    </div>
+  );
+}
+
+function Stat({ n, label, tone }: { n: number; label: string; tone: 'amber' | 'violet' | 'sky' }) {
+  const color =
+    tone === 'amber' ? 'text-amber-400 bg-amber-500/8' :
+    tone === 'violet' ? 'text-violet-300 bg-violet-500/8' :
+    'text-sky-400 bg-sky-500/8';
+  return (
+    <div className={`rounded-lg p-2 text-center ${color}`}>
+      <div className="text-lg font-bold leading-none">{n}</div>
+      <div className="text-[10px] text-muted-foreground mt-1">{label}</div>
+    </div>
+  );
+}
+
+function Empty({ tip }: { tip: string }) {
+  return (
+    <div className="py-16 text-center text-muted-foreground">
+      <p className="text-sm">还是空的</p>
+      <p className="text-xs mt-2 opacity-80 px-6 leading-relaxed">{tip}</p>
     </div>
   );
 }
