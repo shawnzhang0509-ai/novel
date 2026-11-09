@@ -1,0 +1,1838 @@
+[
+ {
+  "id": "1",
+  "num": 1,
+  "sub": 0,
+  "title": "一个没有门的世界",
+  "words": 4250,
+  "file": "chapters/001_一个没有门的世界.md",
+  "source": "1. 一个没有门的世界.docx"
+ },
+ {
+  "id": "2",
+  "num": 2,
+  "sub": 0,
+  "title": "破茧组",
+  "words": 6174,
+  "file": "chapters/002_破茧组.md",
+  "source": "2. 破茧组.docx"
+ },
+ {
+  "id": "3",
+  "num": 3,
+  "sub": 0,
+  "title": "秋水和洛神",
+  "words": 4442,
+  "file": "chapters/003_秋水和洛神.md",
+  "source": "3. 秋水和洛神.docx"
+ },
+ {
+  "id": "3.1",
+  "num": 3,
+  "sub": 1,
+  "title": "秋水的盒子过程",
+  "words": 2133,
+  "file": "chapters/003.1_秋水的盒子过程.md",
+  "source": "3.1 秋水的盒子过程.docx"
+ },
+ {
+  "id": "3.2",
+  "num": 3,
+  "sub": 2,
+  "title": "秋水的盒子过程——对民主的反思",
+  "words": 1535,
+  "file": "chapters/003.2_秋水的盒子过程——对民主的反思.md",
+  "source": "3.2 秋水的盒子过程——对民主的反思.docx"
+ },
+ {
+  "id": "3.3",
+  "num": 3,
+  "sub": 3,
+  "title": "秋水的盒子过程——内心的冲动",
+  "words": 1319,
+  "file": "chapters/003.3_秋水的盒子过程——内心的冲动.md",
+  "source": "3.3 秋水的盒子过程——内心的冲动.docx"
+ },
+ {
+  "id": "3.4",
+  "num": 3,
+  "sub": 4,
+  "title": "秋水的荷尔蒙反噬和对女人意识等高线的理解",
+  "words": 1061,
+  "file": "chapters/003.4_秋水的荷尔蒙反噬和对女人意识等高线的理解.md",
+  "source": "3.4 秋水的荷尔蒙反噬和对女人意识等高线的理解.docx"
+ },
+ {
+  "id": "3.5",
+  "num": 3,
+  "sub": 5,
+  "title": "盒子觉醒艺术",
+  "words": 472,
+  "file": "chapters/003.5_盒子觉醒艺术.md",
+  "source": "3.5 盒子觉醒艺术.docx"
+ },
+ {
+  "id": "3.6",
+  "num": 3,
+  "sub": 6,
+  "title": "对时间的理解",
+  "words": 282,
+  "file": "chapters/003.6_对时间的理解.md",
+  "source": "3.6 对时间的理解.docx"
+ },
+ {
+  "id": "3.7",
+  "num": 3,
+  "sub": 7,
+  "title": "秋水找工作",
+  "words": 826,
+  "file": "chapters/003.7_秋水找工作.md",
+  "source": "3.7 秋水找工作.docx"
+ },
+ {
+  "id": "3.8",
+  "num": 3,
+  "sub": 8,
+  "title": "秋水对芯片的逆反",
+  "words": 623,
+  "file": "chapters/003.8_秋水对芯片的逆反.md",
+  "source": "3.8 秋水对芯片的逆反.docx"
+ },
+ {
+  "id": "3.9",
+  "num": 3,
+  "sub": 9,
+  "title": "现实和梦境开始交接",
+  "words": 1788,
+  "file": "chapters/003.9_现实和梦境开始交接.md",
+  "source": "3.9 现实和梦境开始交接.docx"
+ },
+ {
+  "id": "4",
+  "num": 4,
+  "sub": 0,
+  "title": "史前的故事",
+  "words": 16752,
+  "file": "chapters/004_史前的故事.md",
+  "source": "4. 史前的故事.docx"
+ },
+ {
+  "id": "5",
+  "num": 5,
+  "sub": 0,
+  "title": "历史分期",
+  "words": 5300,
+  "file": "chapters/005_历史分期.md",
+  "source": "5. 历史分期.docx"
+ },
+ {
+  "id": "6",
+  "num": 6,
+  "sub": 0,
+  "title": "秋水的解救过程",
+  "words": 2420,
+  "file": "chapters/006_秋水的解救过程.md",
+  "source": "6. 秋水的解救过程.docx"
+ },
+ {
+  "id": "7",
+  "num": 7,
+  "sub": 0,
+  "title": "张瞩的疑惑",
+  "words": 3254,
+  "file": "chapters/007_张瞩的疑惑.md",
+  "source": "7. 张瞩的疑惑.docx"
+ },
+ {
+  "id": "8",
+  "num": 8,
+  "sub": 0,
+  "title": "取卵人的故事",
+  "words": 8719,
+  "file": "chapters/008_取卵人的故事.md",
+  "source": "8. 取卵人的故事.docx"
+ },
+ {
+  "id": "9",
+  "num": 9,
+  "sub": 0,
+  "title": "NT清除计划",
+  "words": 1478,
+  "file": "chapters/009_NT清除计划.md",
+  "source": "9. NT清除计划.docx"
+ },
+ {
+  "id": "10",
+  "num": 10,
+  "sub": 0,
+  "title": "发现的源头——照片",
+  "words": 2976,
+  "file": "chapters/010_发现的源头——照片.md",
+  "source": "10. 发现的源头——照片.docx"
+ },
+ {
+  "id": "11",
+  "num": 11,
+  "sub": 0,
+  "title": "极化针和太阳风暴",
+  "words": 5125,
+  "file": "chapters/011_极化针和太阳风暴.md",
+  "source": "11. 极化针和太阳风暴.docx"
+ },
+ {
+  "id": "12",
+  "num": 12,
+  "sub": 0,
+  "title": "13区的表演",
+  "words": 2954,
+  "file": "chapters/012_13区的表演.md",
+  "source": "12. 13区的表演.docx"
+ },
+ {
+  "id": "13",
+  "num": 13,
+  "sub": 0,
+  "title": "明星的气场",
+  "words": 1050,
+  "file": "chapters/013_明星的气场.md",
+  "source": "13.  明星的气场.docx"
+ },
+ {
+  "id": "14",
+  "num": 14,
+  "sub": 0,
+  "title": "13区最大的明星的死",
+  "words": 2642,
+  "file": "chapters/014_13区最大的明星的死.md",
+  "source": "14. 13区最大的明星的死.docx"
+ },
+ {
+  "id": "15",
+  "num": 15,
+  "sub": 0,
+  "title": "秋水回到地面",
+  "words": 1131,
+  "file": "chapters/015_秋水回到地面.md",
+  "source": "15. 秋水回到地面.docx"
+ },
+ {
+  "id": "16.1",
+  "num": 16,
+  "sub": 1,
+  "title": "老人的回忆",
+  "words": 445,
+  "file": "chapters/016.1_老人的回忆.md",
+  "source": "16.1 老人的回忆.docx"
+ },
+ {
+  "id": "17",
+  "num": 17,
+  "sub": 0,
+  "title": "破茧组和博士的终局",
+  "words": 1805,
+  "file": "chapters/017_破茧组和博士的终局.md",
+  "source": "17. 破茧组和博士的终局.docx"
+ },
+ {
+  "id": "18",
+  "num": 18,
+  "sub": 0,
+  "title": "秋水和娜美捅破窗户纸",
+  "words": 1105,
+  "file": "chapters/018_秋水和娜美捅破窗户纸.md",
+  "source": "18. 秋水和娜美捅破窗户纸.docx"
+ },
+ {
+  "id": "19",
+  "num": 19,
+  "sub": 0,
+  "title": "情绪觉醒——诗歌朗诵",
+  "words": 475,
+  "file": "chapters/019_情绪觉醒——诗歌朗诵.md",
+  "source": "19. 情绪觉醒——诗歌朗诵.docx"
+ },
+ {
+  "id": "20.1",
+  "num": 20,
+  "sub": 1,
+  "title": "秋水与意义工厂",
+  "words": 852,
+  "file": "chapters/020.1_秋水与意义工厂.md",
+  "source": "20.1 秋水与意义工厂.docx"
+ },
+ {
+  "id": "21.1",
+  "num": 21,
+  "sub": 1,
+  "title": "接引人",
+  "words": 757,
+  "file": "chapters/021.1_接引人.md",
+  "source": "21.1接引人.docx"
+ },
+ {
+  "id": "22",
+  "num": 22,
+  "sub": 0,
+  "title": "25号宇宙的理论基础",
+  "words": 1821,
+  "file": "chapters/022_25号宇宙的理论基础.md",
+  "source": "22. 25号宇宙的理论基础.docx"
+ },
+ {
+  "id": "23.1",
+  "num": 23,
+  "sub": 1,
+  "title": "情绪碎片.学校",
+  "words": 616,
+  "file": "chapters/023.1_情绪碎片.学校.md",
+  "source": "23.1 情绪碎片.学校.docx"
+ },
+ {
+  "id": "23.2",
+  "num": 23,
+  "sub": 2,
+  "title": "情绪碎片. 梓洛的死",
+  "words": 3269,
+  "file": "chapters/023.2_情绪碎片. 梓洛的死.md",
+  "source": "23.2 情绪碎片. 梓洛的死.docx"
+ },
+ {
+  "id": "24",
+  "num": 24,
+  "sub": 0,
+  "title": "历史之山 和老者的对话",
+  "words": 3922,
+  "file": "chapters/024_历史之山 和老者的对话.md",
+  "source": "24. 历史之山 和老者的对话.docx"
+ },
+ {
+  "id": "25",
+  "num": 25,
+  "sub": 0,
+  "title": "代码体质丢失",
+  "words": 527,
+  "file": "chapters/025_代码体质丢失.md",
+  "source": "25. 代码体质丢失.docx"
+ },
+ {
+  "id": "26",
+  "num": 26,
+  "sub": 0,
+  "title": "盒子机制",
+  "words": 933,
+  "file": "chapters/026_盒子机制.md",
+  "source": "26. 盒子机制.docx"
+ },
+ {
+  "id": "27",
+  "num": 27,
+  "sub": 0,
+  "title": "学校",
+  "words": 644,
+  "file": "chapters/027_学校.md",
+  "source": "27. 学校.docx"
+ },
+ {
+  "id": "28",
+  "num": 28,
+  "sub": 0,
+  "title": "小说家",
+  "words": 3687,
+  "file": "chapters/028_小说家.md",
+  "source": "28. 小说家.docx"
+ },
+ {
+  "id": "29",
+  "num": 29,
+  "sub": 0,
+  "title": "历史分期的讲法",
+  "words": 1038,
+  "file": "chapters/029_历史分期的讲法.md",
+  "source": "29. 历史分期的讲法.docx"
+ },
+ {
+  "id": "30",
+  "num": 30,
+  "sub": 0,
+  "title": "秋水的充实感和迟到",
+  "words": 354,
+  "file": "chapters/030_秋水的充实感和迟到.md",
+  "source": "30. 秋水的充实感和迟到.docx"
+ },
+ {
+  "id": "31",
+  "num": 31,
+  "sub": 0,
+  "title": "秋水不做梦，找博士解惑",
+  "words": 825,
+  "file": "chapters/031_秋水不做梦，找博士解惑.md",
+  "source": "31. 秋水不做梦，找博士解惑.docx"
+ },
+ {
+  "id": "32",
+  "num": 32,
+  "sub": 0,
+  "title": "秋水和阳明的对话，一次抉择",
+  "words": 267,
+  "file": "chapters/032_秋水和阳明的对话，一次抉择.md",
+  "source": "32. 秋水和阳明的对话，一次抉择.docx"
+ },
+ {
+  "id": "33",
+  "num": 33,
+  "sub": 0,
+  "title": "红光与清醒",
+  "words": 1356,
+  "file": "chapters/033_红光与清醒.md",
+  "source": "33. 红光与清醒.docx"
+ },
+ {
+  "id": "34",
+  "num": 34,
+  "sub": 0,
+  "title": "秋水的状态，独处",
+  "words": 1380,
+  "file": "chapters/034_秋水的状态，独处.md",
+  "source": "34. 秋水的状态，独处.docx"
+ },
+ {
+  "id": "35",
+  "num": 35,
+  "sub": 0,
+  "title": "货币原则与怪物",
+  "words": 1350,
+  "file": "chapters/035_货币原则与怪物.md",
+  "source": "35. 货币原则与怪物.docx"
+ },
+ {
+  "id": "36",
+  "num": 36,
+  "sub": 0,
+  "title": "胥子诺的纠结",
+  "words": 410,
+  "file": "chapters/036_胥子诺的纠结.md",
+  "source": "36. 胥子诺的纠结.docx"
+ },
+ {
+  "id": "37",
+  "num": 37,
+  "sub": 0,
+  "title": "秋水做爱时的感悟",
+  "words": 581,
+  "file": "chapters/037_秋水做爱时的感悟.md",
+  "source": "37. 秋水做爱时的感悟.docx"
+ },
+ {
+  "id": "38",
+  "num": 38,
+  "sub": 0,
+  "title": "秋水关于世界本源的探讨",
+  "words": 348,
+  "file": "chapters/038_秋水关于世界本源的探讨.md",
+  "source": "38. 秋水关于世界本源的探讨.docx"
+ },
+ {
+  "id": "39",
+  "num": 39,
+  "sub": 0,
+  "title": "秋水自认为是个异类的心路",
+  "words": 526,
+  "file": "chapters/039_秋水自认为是个异类的心路.md",
+  "source": "39. 秋水自认为是个异类的心路.docx"
+ },
+ {
+  "id": "40",
+  "num": 40,
+  "sub": 0,
+  "title": "秋水被裁员后遇到的奇怪的人",
+  "words": 507,
+  "file": "chapters/040_秋水被裁员后遇到的奇怪的人.md",
+  "source": "40. 秋水被裁员后遇到的奇怪的人.docx"
+ },
+ {
+  "id": "41",
+  "num": 41,
+  "sub": 0,
+  "title": "妓女与创作灵感",
+  "words": 783,
+  "file": "chapters/041_妓女与创作灵感.md",
+  "source": "41. 妓女与创作灵感.docx"
+ },
+ {
+  "id": "42",
+  "num": 42,
+  "sub": 0,
+  "title": "秋水与母亲关于钱的探讨",
+  "words": 2456,
+  "file": "chapters/042_秋水与母亲关于钱的探讨.md",
+  "source": "42. 秋水与母亲关于钱的探讨.docx"
+ },
+ {
+  "id": "43",
+  "num": 43,
+  "sub": 0,
+  "title": "秋水关于自杀的思考",
+  "words": 1086,
+  "file": "chapters/043_秋水关于自杀的思考.md",
+  "source": "43. 秋水关于自杀的思考.docx"
+ },
+ {
+  "id": "44",
+  "num": 44,
+  "sub": 0,
+  "title": "爱与死亡",
+  "words": 1481,
+  "file": "chapters/044_爱与死亡.md",
+  "source": "44. 爱与死亡.docx"
+ },
+ {
+  "id": "45",
+  "num": 45,
+  "sub": 0,
+  "title": "康城火车站",
+  "words": 822,
+  "file": "chapters/045_康城火车站.md",
+  "source": "45. 康城火车站.docx"
+ },
+ {
+  "id": "46",
+  "num": 46,
+  "sub": 0,
+  "title": "卵之守护者",
+  "words": 917,
+  "file": "chapters/046_卵之守护者.md",
+  "source": "46. 卵之守护者.docx"
+ },
+ {
+  "id": "47",
+  "num": 47,
+  "sub": 0,
+  "title": "被抛入盒子系统",
+  "words": 1304,
+  "file": "chapters/047_被抛入盒子系统.md",
+  "source": "47. 被抛入盒子系统.docx"
+ },
+ {
+  "id": "48",
+  "num": 48,
+  "sub": 0,
+  "title": "质问老师",
+  "words": 504,
+  "file": "chapters/048_质问老师.md",
+  "source": "48. 质问老师.docx"
+ },
+ {
+  "id": "49",
+  "num": 49,
+  "sub": 0,
+  "title": "文明封装 回到历史",
+  "words": 2797,
+  "file": "chapters/049_文明封装 回到历史.md",
+  "source": "49.文明封装 回到历史.docx"
+ },
+ {
+  "id": "50",
+  "num": 50,
+  "sub": 0,
+  "title": "意义法则 森林法则",
+  "words": 852,
+  "file": "chapters/050_意义法则 森林法则.md",
+  "source": "50. 意义法则 森林法则.docx"
+ },
+ {
+  "id": "51",
+  "num": 51,
+  "sub": 0,
+  "title": "秋水的低能量状态",
+  "words": 882,
+  "file": "chapters/051_秋水的低能量状态.md",
+  "source": "51. 秋水的低能量状态.docx"
+ },
+ {
+  "id": "52",
+  "num": 52,
+  "sub": 0,
+  "title": "汴大后的面对",
+  "words": 897,
+  "file": "chapters/052_汴大后的面对.md",
+  "source": "52. 汴大后的面对.docx"
+ },
+ {
+  "id": "53",
+  "num": 53,
+  "sub": 0,
+  "title": "死亡构图",
+  "words": 1101,
+  "file": "chapters/053_死亡构图.md",
+  "source": "53. 死亡构图.docx"
+ },
+ {
+  "id": "54",
+  "num": 54,
+  "sub": 0,
+  "title": "世俗中的办事",
+  "words": 1087,
+  "file": "chapters/054_世俗中的办事.md",
+  "source": "54. 世俗中的办事.docx"
+ },
+ {
+  "id": "55",
+  "num": 55,
+  "sub": 0,
+  "title": "总设计师演讲",
+  "words": 1472,
+  "file": "chapters/055_总设计师演讲.md",
+  "source": "55. 总设计师演讲.docx"
+ },
+ {
+  "id": "56",
+  "num": 56,
+  "sub": 0,
+  "title": "鼠人部落与集体意识",
+  "words": 1284,
+  "file": "chapters/056_鼠人部落与集体意识.md",
+  "source": "56. 鼠人部落与集体意识.docx"
+ },
+ {
+  "id": "57",
+  "num": 57,
+  "sub": 0,
+  "title": "茧外之果",
+  "words": 3501,
+  "file": "chapters/057_茧外之果.md",
+  "source": "57. 茧外之果.docx"
+ },
+ {
+  "id": "58",
+  "num": 58,
+  "sub": 0,
+  "title": "香设计与创业路",
+  "words": 1800,
+  "file": "chapters/058_香设计与创业路.md",
+  "source": "58. 香设计与创业路.docx"
+ },
+ {
+  "id": "59",
+  "num": 59,
+  "sub": 0,
+  "title": "混乱的爱情",
+  "words": 6594,
+  "file": "chapters/059_混乱的爱情.md",
+  "source": "59. 混乱的爱情.docx"
+ },
+ {
+  "id": "60",
+  "num": 60,
+  "sub": 0,
+  "title": "白秋水与小小人",
+  "words": 321,
+  "file": "chapters/060_白秋水与小小人.md",
+  "source": "60. 白秋水与小小人.docx"
+ },
+ {
+  "id": "61",
+  "num": 61,
+  "sub": 0,
+  "title": "黎曦与秘密组织",
+  "words": 2927,
+  "file": "chapters/061_黎曦与秘密组织.md",
+  "source": "61. 黎曦与秘密组织.docx"
+ },
+ {
+  "id": "62",
+  "num": 62,
+  "sub": 0,
+  "title": "秋水之死与秋水与黎曦的遇见",
+  "words": 1424,
+  "file": "chapters/062_秋水之死与秋水与黎曦的遇见.md",
+  "source": "62. 秋水之死与秋水与黎曦的遇见.docx"
+ },
+ {
+  "id": "63",
+  "num": 63,
+  "sub": 0,
+  "title": "黎安的决心，新版纸币",
+  "words": 2229,
+  "file": "chapters/063_黎安的决心，新版纸币.md",
+  "source": "63. 黎安的决心，新版纸币.docx"
+ },
+ {
+  "id": "64",
+  "num": 64,
+  "sub": 0,
+  "title": "心爱的人回不来",
+  "words": 1432,
+  "file": "chapters/064_心爱的人回不来.md",
+  "source": "64. 心爱的人回不来.docx"
+ },
+ {
+  "id": "65",
+  "num": 65,
+  "sub": 0,
+  "title": "宓天踪的转折",
+  "words": 1368,
+  "file": "chapters/065_宓天踪的转折.md",
+  "source": "65. 宓天踪的转折.docx"
+ },
+ {
+  "id": "66",
+  "num": 66,
+  "sub": 0,
+  "title": "多年前的一堂课",
+  "words": 2112,
+  "file": "chapters/066_多年前的一堂课.md",
+  "source": "66. 多年前的一堂课.docx"
+ },
+ {
+  "id": "67",
+  "num": 67,
+  "sub": 0,
+  "title": "红色的荣耀",
+  "words": 1589,
+  "file": "chapters/067_红色的荣耀.md",
+  "source": "67. 红色的荣耀.docx"
+ },
+ {
+  "id": "68",
+  "num": 68,
+  "sub": 0,
+  "title": "梦境复苏",
+  "words": 2350,
+  "file": "chapters/068_梦境复苏.md",
+  "source": "68. 梦境复苏.docx"
+ },
+ {
+  "id": "69",
+  "num": 69,
+  "sub": 0,
+  "title": "秋水去掉芯片",
+  "words": 2084,
+  "file": "chapters/069_秋水去掉芯片.md",
+  "source": "69. 秋水去掉芯片.docx"
+ },
+ {
+  "id": "70",
+  "num": 70,
+  "sub": 0,
+  "title": "秋水的愤怒",
+  "words": 969,
+  "file": "chapters/070_秋水的愤怒.md",
+  "source": "70. 秋水的愤怒.docx"
+ },
+ {
+  "id": "71",
+  "num": 71,
+  "sub": 0,
+  "title": "伟大的演说沉默者和反转时代的人",
+  "words": 1842,
+  "file": "chapters/071_伟大的演说沉默者和反转时代的人.md",
+  "source": "71. 伟大的演说沉默者和反转时代的人.docx"
+ },
+ {
+  "id": "72",
+  "num": 72,
+  "sub": 0,
+  "title": "与妓女的问题",
+  "words": 821,
+  "file": "chapters/072_与妓女的问题.md",
+  "source": "72.与妓女的问题.docx"
+ },
+ {
+  "id": "73",
+  "num": 73,
+  "sub": 0,
+  "title": "地铁上的不安",
+  "words": 446,
+  "file": "chapters/073_地铁上的不安.md",
+  "source": "73. 地铁上的不安.docx"
+ },
+ {
+  "id": "74",
+  "num": 74,
+  "sub": 0,
+  "title": "康城圣考与崩溃",
+  "words": 2296,
+  "file": "chapters/074_康城圣考与崩溃.md",
+  "source": "74. 康城圣考与崩溃.docx"
+ },
+ {
+  "id": "75",
+  "num": 75,
+  "sub": 0,
+  "title": "黎姗姗",
+  "words": 2330,
+  "file": "chapters/075_黎姗姗.md",
+  "source": "75 黎姗姗.docx"
+ },
+ {
+  "id": "76",
+  "num": 76,
+  "sub": 0,
+  "title": "美术老师",
+  "words": 1949,
+  "file": "chapters/076_美术老师.md",
+  "source": "76美术老师.docx"
+ },
+ {
+  "id": "77",
+  "num": 77,
+  "sub": 0,
+  "title": "警察调查",
+  "words": 868,
+  "file": "chapters/077_警察调查.md",
+  "source": "77. 警察调查.docx"
+ },
+ {
+  "id": "78",
+  "num": 78,
+  "sub": 0,
+  "title": "盗墓贼",
+  "words": 2207,
+  "file": "chapters/078_盗墓贼.md",
+  "source": "78. 盗墓贼.docx"
+ },
+ {
+  "id": "79",
+  "num": 79,
+  "sub": 0,
+  "title": "胶皮数据",
+  "words": 1100,
+  "file": "chapters/079_胶皮数据.md",
+  "source": "79.胶皮数据.docx"
+ },
+ {
+  "id": "80",
+  "num": 80,
+  "sub": 0,
+  "title": "甩掉女人",
+  "words": 602,
+  "file": "chapters/080_甩掉女人.md",
+  "source": "80.甩掉女人.docx"
+ },
+ {
+  "id": "81",
+  "num": 81,
+  "sub": 0,
+  "title": "会计面子与坍缩的爱",
+  "words": 3867,
+  "file": "chapters/081_会计面子与坍缩的爱.md",
+  "source": "81. 会计面子与坍缩的爱.docx"
+ },
+ {
+  "id": "82",
+  "num": 82,
+  "sub": 0,
+  "title": "阿玲与肉体",
+  "words": 923,
+  "file": "chapters/082_阿玲与肉体.md",
+  "source": "82. 阿玲与肉体.docx"
+ },
+ {
+  "id": "83",
+  "num": 83,
+  "sub": 0,
+  "title": "与美玲的初遇",
+  "words": 1413,
+  "file": "chapters/083_与美玲的初遇.md",
+  "source": "83. 与美玲的初遇.docx"
+ },
+ {
+  "id": "84",
+  "num": 84,
+  "sub": 0,
+  "title": "穷与富，下南洋",
+  "words": 1182,
+  "file": "chapters/084_穷与富，下南洋.md",
+  "source": "84. 穷与富，下南洋.docx"
+ },
+ {
+  "id": "85",
+  "num": 85,
+  "sub": 0,
+  "title": "晓云与破空",
+  "words": 2254,
+  "file": "chapters/085_晓云与破空.md",
+  "source": "85.晓云与破空.docx"
+ },
+ {
+  "id": "86",
+  "num": 86,
+  "sub": 0,
+  "title": "科技绑架",
+  "words": 473,
+  "file": "chapters/086_科技绑架.md",
+  "source": "86. 科技绑架.docx"
+ },
+ {
+  "id": "87",
+  "num": 87,
+  "sub": 0,
+  "title": "一切都是空 为何有大师",
+  "words": 1223,
+  "file": "chapters/087_一切都是空 为何有大师.md",
+  "source": "87. 一切都是空 为何有大师.docx"
+ },
+ {
+  "id": "88",
+  "num": 88,
+  "sub": 0,
+  "title": "盒子里的MBTI",
+  "words": 2768,
+  "file": "chapters/088_盒子里的MBTI.md",
+  "source": "88. 盒子里的MBTI.docx"
+ },
+ {
+  "id": "89",
+  "num": 89,
+  "sub": 0,
+  "title": "MBTI续",
+  "words": 1376,
+  "file": "chapters/089_MBTI续.md",
+  "source": "89. MBTI续.docx"
+ },
+ {
+  "id": "90",
+  "num": 90,
+  "sub": 0,
+  "title": "自序与后记",
+  "words": 3025,
+  "file": "chapters/090_自序与后记.md",
+  "source": "90. 自序与后记.docx"
+ },
+ {
+  "id": "91",
+  "num": 91,
+  "sub": 0,
+  "title": "拯救文化",
+  "words": 466,
+  "file": "chapters/091_拯救文化.md",
+  "source": "91. 拯救文化.docx"
+ },
+ {
+  "id": "92",
+  "num": 92,
+  "sub": 0,
+  "title": "端甫祭祀会议",
+  "words": 2425,
+  "file": "chapters/092_端甫祭祀会议.md",
+  "source": "92. 端甫祭祀会议.docx"
+ },
+ {
+  "id": "93",
+  "num": 93,
+  "sub": 0,
+  "title": "家族斗兽场",
+  "words": 762,
+  "file": "chapters/093_家族斗兽场.md",
+  "source": "93. 家族斗兽场.docx"
+ },
+ {
+  "id": "94",
+  "num": 94,
+  "sub": 0,
+  "title": "洛白的回忆",
+  "words": 1798,
+  "file": "chapters/094_洛白的回忆.md",
+  "source": "94. 洛白的回忆.docx"
+ },
+ {
+  "id": "95",
+  "num": 95,
+  "sub": 0,
+  "title": "秋水观察盒子",
+  "words": 1488,
+  "file": "chapters/095_秋水观察盒子.md",
+  "source": "95. 秋水观察盒子.docx"
+ },
+ {
+  "id": "96",
+  "num": 96,
+  "sub": 0,
+  "title": "博士之死与中英文",
+  "words": 2967,
+  "file": "chapters/096_博士之死与中英文.md",
+  "source": "96. 博士之死与中英文.docx"
+ },
+ {
+  "id": "97",
+  "num": 97,
+  "sub": 0,
+  "title": "雾火山城的双重结界",
+  "words": 788,
+  "file": "chapters/097_雾火山城的双重结界.md",
+  "source": "97. 雾火山城的双重结界.docx"
+ },
+ {
+  "id": "98",
+  "num": 98,
+  "sub": 0,
+  "title": "血液系 大脑系",
+  "words": 2369,
+  "file": "chapters/098_血液系 大脑系.md",
+  "source": "98. 血液系 大脑系.docx"
+ },
+ {
+  "id": "99",
+  "num": 99,
+  "sub": 0,
+  "title": "一半人为了另一半人",
+  "words": 650,
+  "file": "chapters/099_一半人为了另一半人.md",
+  "source": "99. 一半人为了另一半人.docx"
+ },
+ {
+  "id": "100",
+  "num": 100,
+  "sub": 0,
+  "title": "尘归尘 土归土",
+  "words": 355,
+  "file": "chapters/100_尘归尘 土归土.md",
+  "source": "100. 尘归尘 土归土.docx"
+ },
+ {
+  "id": "101",
+  "num": 101,
+  "sub": 0,
+  "title": "初露峥嵘 历史山之下",
+  "words": 3602,
+  "file": "chapters/101_初露峥嵘 历史山之下.md",
+  "source": "101. 初露峥嵘 历史山之下.docx"
+ },
+ {
+  "id": "102",
+  "num": 102,
+  "sub": 0,
+  "title": "反思猎头手柄",
+  "words": 582,
+  "file": "chapters/102_反思猎头手柄.md",
+  "source": "102. 反思猎头手柄.docx"
+ },
+ {
+  "id": "103",
+  "num": 103,
+  "sub": 0,
+  "title": "又搞砸了",
+  "words": 1303,
+  "file": "chapters/103_又搞砸了.md",
+  "source": "103. 又搞砸了.docx"
+ },
+ {
+  "id": "104",
+  "num": 104,
+  "sub": 0,
+  "title": "学术圈地",
+  "words": 945,
+  "file": "chapters/104_学术圈地.md",
+  "source": "104. 学术圈地.docx"
+ },
+ {
+  "id": "105",
+  "num": 105,
+  "sub": 0,
+  "title": "纪元划分",
+  "words": 979,
+  "file": "chapters/105_纪元划分.md",
+  "source": "105. 纪元划分.docx"
+ },
+ {
+  "id": "106",
+  "num": 106,
+  "sub": 0,
+  "title": "门开了",
+  "words": 851,
+  "file": "chapters/106_门开了.md",
+  "source": "106. 门开了.docx"
+ },
+ {
+  "id": "107",
+  "num": 107,
+  "sub": 0,
+  "title": "化验报告 重启戴森球",
+  "words": 2739,
+  "file": "chapters/107_化验报告 重启戴森球.md",
+  "source": "107. 化验报告 重启戴森球.docx"
+ },
+ {
+  "id": "108",
+  "num": 108,
+  "sub": 0,
+  "title": "张嘱苏舞和解",
+  "words": 836,
+  "file": "chapters/108_张嘱苏舞和解.md",
+  "source": "108. 张嘱苏舞和解.docx"
+ },
+ {
+  "id": "109",
+  "num": 109,
+  "sub": 0,
+  "title": "扔掉芯片",
+  "words": 2379,
+  "file": "chapters/109_扔掉芯片.md",
+  "source": "109. 扔掉芯片.docx"
+ },
+ {
+  "id": "110",
+  "num": 110,
+  "sub": 0,
+  "title": "苏舞篇",
+  "words": 1509,
+  "file": "chapters/110_苏舞篇.md",
+  "source": "110. 苏舞篇.docx"
+ },
+ {
+  "id": "111",
+  "num": 111,
+  "sub": 0,
+  "title": "大船小船会议",
+  "words": 2008,
+  "file": "chapters/111_大船小船会议.md",
+  "source": "111. 大船小船会议.docx"
+ },
+ {
+  "id": "112",
+  "num": 112,
+  "sub": 0,
+  "title": "人造子宫的破坏",
+  "words": 595,
+  "file": "chapters/112_人造子宫的破坏.md",
+  "source": "112. 人造子宫的破坏.docx"
+ },
+ {
+  "id": "113",
+  "num": 113,
+  "sub": 0,
+  "title": "苏舞大船",
+  "words": 3127,
+  "file": "chapters/113_苏舞大船.md",
+  "source": "113. 苏舞大船.docx"
+ },
+ {
+  "id": "114",
+  "num": 114,
+  "sub": 0,
+  "title": "子昂",
+  "words": 3266,
+  "file": "chapters/114_子昂.md",
+  "source": "114. 子昂.docx"
+ },
+ {
+  "id": "115",
+  "num": 115,
+  "sub": 0,
+  "title": "退票",
+  "words": 787,
+  "file": "chapters/115_退票.md",
+  "source": "115. 退票.docx"
+ },
+ {
+  "id": "116",
+  "num": 116,
+  "sub": 0,
+  "title": "破茧组的手术",
+  "words": 3190,
+  "file": "chapters/116_破茧组的手术.md",
+  "source": "116. 破茧组的手术.docx"
+ },
+ {
+  "id": "117",
+  "num": 117,
+  "sub": 0,
+  "title": "观呼吸",
+  "words": 713,
+  "file": "chapters/117_观呼吸.md",
+  "source": "117. 观呼吸.docx"
+ },
+ {
+  "id": "118",
+  "num": 118,
+  "sub": 0,
+  "title": "打牌",
+  "words": 1152,
+  "file": "chapters/118_打牌.md",
+  "source": "118. 打牌.docx"
+ },
+ {
+  "id": "119",
+  "num": 119,
+  "sub": 0,
+  "title": "喜欢一个人的感受",
+  "words": 1511,
+  "file": "chapters/119_喜欢一个人的感受.md",
+  "source": "119. 喜欢一个人的感受.docx"
+ },
+ {
+  "id": "120",
+  "num": 120,
+  "sub": 0,
+  "title": "糯米种子",
+  "words": 3100,
+  "file": "chapters/120_糯米种子.md",
+  "source": "120. 糯米种子.docx"
+ },
+ {
+  "id": "121",
+  "num": 121,
+  "sub": 0,
+  "title": "不可触摸——进入意识操纵状态",
+  "words": 2213,
+  "file": "chapters/121_不可触摸——进入意识操纵状态.md",
+  "source": "121. 不可触摸——进入意识操纵状态.docx"
+ },
+ {
+  "id": "122",
+  "num": 122,
+  "sub": 0,
+  "title": "艺术",
+  "words": 1340,
+  "file": "chapters/122_艺术.md",
+  "source": "122. 艺术.docx"
+ },
+ {
+  "id": "123",
+  "num": 123,
+  "sub": 0,
+  "title": "我只是一串代码而已",
+  "words": 1053,
+  "file": "chapters/123_我只是一串代码而已.md",
+  "source": "123. 我只是一串代码而已.docx"
+ },
+ {
+  "id": "124",
+  "num": 124,
+  "sub": 0,
+  "title": "原始对决",
+  "words": 1645,
+  "file": "chapters/124_原始对决.md",
+  "source": "124. 原始对决.docx"
+ },
+ {
+  "id": "125",
+  "num": 125,
+  "sub": 0,
+  "title": "张瞩投降破茧组",
+  "words": 640,
+  "file": "chapters/125_张瞩投降破茧组.md",
+  "source": "125. 张瞩投降破茧组.docx"
+ },
+ {
+  "id": "126",
+  "num": 126,
+  "sub": 0,
+  "title": "叛乱回溯",
+  "words": 2363,
+  "file": "chapters/126_叛乱回溯.md",
+  "source": "126. 叛乱回溯.docx"
+ },
+ {
+  "id": "127",
+  "num": 127,
+  "sub": 0,
+  "title": "吉尔伽美什",
+  "words": 2746,
+  "file": "chapters/127_吉尔伽美什.md",
+  "source": "127. 吉尔伽美什.docx"
+ },
+ {
+  "id": "128",
+  "num": 128,
+  "sub": 0,
+  "title": "兄弟殊途",
+  "words": 1303,
+  "file": "chapters/128_兄弟殊途.md",
+  "source": "128. 兄弟殊途.docx"
+ },
+ {
+  "id": "129",
+  "num": 129,
+  "sub": 0,
+  "title": "至人若鉴",
+  "words": 1098,
+  "file": "chapters/129_至人若鉴.md",
+  "source": "129. 至人若鉴.docx"
+ },
+ {
+  "id": "130",
+  "num": 130,
+  "sub": 0,
+  "title": "看到泡泡",
+  "words": 2204,
+  "file": "chapters/130_看到泡泡.md",
+  "source": "130. 看到泡泡.docx"
+ },
+ {
+  "id": "131",
+  "num": 131,
+  "sub": 0,
+  "title": "发射塔",
+  "words": 1236,
+  "file": "chapters/131_发射塔.md",
+  "source": "131. 发射塔.docx"
+ },
+ {
+  "id": "132",
+  "num": 132,
+  "sub": 0,
+  "title": "黎安和女人",
+  "words": 470,
+  "file": "chapters/132_黎安和女人.md",
+  "source": "132. 黎安和女人.docx"
+ },
+ {
+  "id": "133",
+  "num": 133,
+  "sub": 0,
+  "title": "王端甫",
+  "words": 1185,
+  "file": "chapters/133_王端甫.md",
+  "source": "133. 王端甫.docx"
+ },
+ {
+  "id": "134",
+  "num": 134,
+  "sub": 0,
+  "title": "真正的高贵",
+  "words": 2216,
+  "file": "chapters/134_真正的高贵.md",
+  "source": "134. 真正的高贵.docx"
+ },
+ {
+  "id": "135",
+  "num": 135,
+  "sub": 0,
+  "title": "医生与迟来的共鸣",
+  "words": 3702,
+  "file": "chapters/135_医生与迟来的共鸣.md",
+  "source": "135. 医生与迟来的共鸣.docx"
+ },
+ {
+  "id": "136",
+  "num": 136,
+  "sub": 0,
+  "title": "抑郁质",
+  "words": 2024,
+  "file": "chapters/136_抑郁质.md",
+  "source": "136. 抑郁质.docx"
+ },
+ {
+  "id": "137",
+  "num": 137,
+  "sub": 0,
+  "title": "决定世界的是女人",
+  "words": 1375,
+  "file": "chapters/137_决定世界的是女人.md",
+  "source": "137.决定世界的是女人.docx"
+ },
+ {
+  "id": "138",
+  "num": 138,
+  "sub": 0,
+  "title": "胖子军团",
+  "words": 2360,
+  "file": "chapters/138_胖子军团.md",
+  "source": "138. 胖子军团.docx"
+ },
+ {
+  "id": "139",
+  "num": 139,
+  "sub": 0,
+  "title": "秋水醒后",
+  "words": 3192,
+  "file": "chapters/139_秋水醒后.md",
+  "source": "139. 秋水醒后.docx"
+ },
+ {
+  "id": "140",
+  "num": 140,
+  "sub": 0,
+  "title": "分享盒子",
+  "words": 2730,
+  "file": "chapters/140_分享盒子.md",
+  "source": "140. 分享盒子.docx"
+ },
+ {
+  "id": "141",
+  "num": 141,
+  "sub": 0,
+  "title": "阳冥",
+  "words": 467,
+  "file": "chapters/141_阳冥.md",
+  "source": "141. 阳冥.docx"
+ },
+ {
+  "id": "142",
+  "num": 142,
+  "sub": 0,
+  "title": "杀了刺猬",
+  "words": 1749,
+  "file": "chapters/142_杀了刺猬.md",
+  "source": "142. 杀了刺猬.docx"
+ },
+ {
+  "id": "143",
+  "num": 143,
+  "sub": 0,
+  "title": "心智呼唤模式升级",
+  "words": 2763,
+  "file": "chapters/143_心智呼唤模式升级.md",
+  "source": "143. 心智呼唤模式升级.docx"
+ },
+ {
+  "id": "144",
+  "num": 144,
+  "sub": 0,
+  "title": "黑色披风的竞选者",
+  "words": 2147,
+  "file": "chapters/144_黑色披风的竞选者.md",
+  "source": "144. 黑色披风的竞选者.docx"
+ },
+ {
+  "id": "145",
+  "num": 145,
+  "sub": 0,
+  "title": "人工智能妥协",
+  "words": 3027,
+  "file": "chapters/145_人工智能妥协.md",
+  "source": "145. 人工智能妥协.docx"
+ },
+ {
+  "id": "146",
+  "num": 146,
+  "sub": 0,
+  "title": "小樱 梓洛 秋水恢复写作",
+  "words": 2264,
+  "file": "chapters/146_小樱 梓洛 秋水恢复写作.md",
+  "source": "146. 小樱 梓洛 秋水恢复写作.docx"
+ },
+ {
+  "id": "147",
+  "num": 147,
+  "sub": 0,
+  "title": "地藏王计划",
+  "words": 2988,
+  "file": "chapters/147_地藏王计划.md",
+  "source": "147. 地藏王计划.docx"
+ },
+ {
+  "id": "148",
+  "num": 148,
+  "sub": 0,
+  "title": "秋水换裤子",
+  "words": 383,
+  "file": "chapters/148_秋水换裤子.md",
+  "source": "148. 秋水换裤子.docx"
+ },
+ {
+  "id": "149",
+  "num": 149,
+  "sub": 0,
+  "title": "人生可能性",
+  "words": 637,
+  "file": "chapters/149_人生可能性.md",
+  "source": "149. 人生可能性.docx"
+ },
+ {
+  "id": "150",
+  "num": 150,
+  "sub": 0,
+  "title": "苗圃之死",
+  "words": 1666,
+  "file": "chapters/150_苗圃之死.md",
+  "source": "150. 苗圃之死.docx"
+ },
+ {
+  "id": "151",
+  "num": 151,
+  "sub": 0,
+  "title": "线索",
+  "words": 2471,
+  "file": "chapters/151_线索.md",
+  "source": "151. 线索.docx"
+ },
+ {
+  "id": "152",
+  "num": 152,
+  "sub": 0,
+  "title": "皿城",
+  "words": 1790,
+  "file": "chapters/152_皿城.md",
+  "source": "152. 皿城.docx"
+ },
+ {
+  "id": "153",
+  "num": 153,
+  "sub": 0,
+  "title": "糯米和代码家族和解",
+  "words": 1783,
+  "file": "chapters/153_糯米和代码家族和解.md",
+  "source": "153. 糯米和代码家族和解.docx"
+ },
+ {
+  "id": "154",
+  "num": 154,
+  "sub": 0,
+  "title": "尼比鲁和戴森党",
+  "words": 2562,
+  "file": "chapters/154_尼比鲁和戴森党.md",
+  "source": "154. 尼比鲁和戴森党.docx"
+ },
+ {
+  "id": "155",
+  "num": 155,
+  "sub": 0,
+  "title": "宇宙规则",
+  "words": 3412,
+  "file": "chapters/155_宇宙规则.md",
+  "source": "155. 宇宙规则.docx"
+ },
+ {
+  "id": "156",
+  "num": 156,
+  "sub": 0,
+  "title": "洛白的转变",
+  "words": 2771,
+  "file": "chapters/156_洛白的转变.md",
+  "source": "156. 洛白的转变.docx"
+ },
+ {
+  "id": "157",
+  "num": 157,
+  "sub": 0,
+  "title": "噬魂者",
+  "words": 1801,
+  "file": "chapters/157_噬魂者.md",
+  "source": "157. 噬魂者.docx"
+ },
+ {
+  "id": "158",
+  "num": 158,
+  "sub": 0,
+  "title": "保护妻子",
+  "words": 3407,
+  "file": "chapters/158_保护妻子.md",
+  "source": "158. 保护妻子.docx"
+ },
+ {
+  "id": "159",
+  "num": 159,
+  "sub": 0,
+  "title": "哥哥别去，和一双鞋",
+  "words": 1336,
+  "file": "chapters/159_哥哥别去，和一双鞋.md",
+  "source": "159. 哥哥别去，和一双鞋.docx"
+ },
+ {
+  "id": "160",
+  "num": 160,
+  "sub": 0,
+  "title": "自我意识与暴怒",
+  "words": 686,
+  "file": "chapters/160_自我意识与暴怒.md",
+  "source": "160. 自我意识与暴怒.docx"
+ },
+ {
+  "id": "161",
+  "num": 161,
+  "sub": 0,
+  "title": "剑鞘上的宝石",
+  "words": 826,
+  "file": "chapters/161_剑鞘上的宝石.md",
+  "source": "161. 剑鞘上的宝石.docx"
+ },
+ {
+  "id": "162",
+  "num": 162,
+  "sub": 0,
+  "title": "盒子融合与超级明星",
+  "words": 3081,
+  "file": "chapters/162_盒子融合与超级明星.md",
+  "source": "162. 盒子融合与超级明星.docx"
+ },
+ {
+  "id": "163",
+  "num": 163,
+  "sub": 0,
+  "title": "破茧组大败接引人",
+  "words": 792,
+  "file": "chapters/163_破茧组大败接引人.md",
+  "source": "163. 破茧组大败接引人.docx"
+ },
+ {
+  "id": "164",
+  "num": 164,
+  "sub": 0,
+  "title": "钥匙山",
+  "words": 502,
+  "file": "chapters/164_钥匙山.md",
+  "source": "164. 钥匙山.docx"
+ },
+ {
+  "id": "165",
+  "num": 165,
+  "sub": 0,
+  "title": "蓝毛",
+  "words": 929,
+  "file": "chapters/165_蓝毛.md",
+  "source": "165. 蓝毛.docx"
+ },
+ {
+  "id": "167",
+  "num": 167,
+  "sub": 0,
+  "title": "英文对话",
+  "words": 1049,
+  "file": "chapters/167_英文对话.md",
+  "source": "167. 英文对话.docx"
+ },
+ {
+  "id": "168",
+  "num": 168,
+  "sub": 0,
+  "title": "莫名其妙晕倒",
+  "words": 513,
+  "file": "chapters/168_莫名其妙晕倒.md",
+  "source": "168. 莫名其妙晕倒.docx"
+ },
+ {
+  "id": "169",
+  "num": 169,
+  "sub": 0,
+  "title": "平衡 另一种潜流 魔鬼契约",
+  "words": 4784,
+  "file": "chapters/169_平衡 另一种潜流 魔鬼契约.md",
+  "source": "169. 平衡 另一种潜流 魔鬼契约.docx"
+ },
+ {
+  "id": "170",
+  "num": 170,
+  "sub": 0,
+  "title": "基因工具",
+  "words": 1530,
+  "file": "chapters/170_基因工具.md",
+  "source": "170. 基因工具.docx"
+ },
+ {
+  "id": "171",
+  "num": 171,
+  "sub": 0,
+  "title": "拼图 传播泡泡 王端甫",
+  "words": 1833,
+  "file": "chapters/171_拼图 传播泡泡 王端甫.md",
+  "source": "171. 拼图 传播泡泡 王端甫.docx"
+ },
+ {
+  "id": "172",
+  "num": 172,
+  "sub": 0,
+  "title": "欲望的起伏",
+  "words": 521,
+  "file": "chapters/172_欲望的起伏.md",
+  "source": "172. 欲望的起伏.docx"
+ },
+ {
+  "id": "173",
+  "num": 173,
+  "sub": 0,
+  "title": "天台上的对话",
+  "words": 793,
+  "file": "chapters/173_天台上的对话.md",
+  "source": "173. 天台上的对话.docx"
+ },
+ {
+  "id": "174",
+  "num": 174,
+  "sub": 0,
+  "title": "梦里不知身是客",
+  "words": 1114,
+  "file": "chapters/174_梦里不知身是客.md",
+  "source": "174. 梦里不知身是客.docx"
+ },
+ {
+  "id": "175",
+  "num": 175,
+  "sub": 0,
+  "title": "茧外茧",
+  "words": 1422,
+  "file": "chapters/175_茧外茧.md",
+  "source": "175. 茧外茧.docx"
+ },
+ {
+  "id": "176",
+  "num": 176,
+  "sub": 0,
+  "title": "痛苦是养料",
+  "words": 1358,
+  "file": "chapters/176_痛苦是养料.md",
+  "source": "176. 痛苦是养料.docx"
+ },
+ {
+  "id": "177",
+  "num": 177,
+  "sub": 0,
+  "title": "往事",
+  "words": 3838,
+  "file": "chapters/177_往事.md",
+  "source": "177. 往事.docx"
+ },
+ {
+  "id": "178",
+  "num": 178,
+  "sub": 0,
+  "title": "现场冲突",
+  "words": 1763,
+  "file": "chapters/178_现场冲突.md",
+  "source": "178. 现场冲突.docx"
+ },
+ {
+  "id": "179",
+  "num": 179,
+  "sub": 0,
+  "title": "铸币局篇",
+  "words": 1870,
+  "file": "chapters/179_铸币局篇.md",
+  "source": "179. 铸币局篇.docx"
+ },
+ {
+  "id": "180",
+  "num": 180,
+  "sub": 0,
+  "title": "父与子",
+  "words": 4174,
+  "file": "chapters/180_父与子.md",
+  "source": "180. 父与子.docx"
+ },
+ {
+  "id": "181",
+  "num": 181,
+  "sub": 0,
+  "title": "新飞船",
+  "words": 2271,
+  "file": "chapters/181_新飞船.md",
+  "source": "181. 新飞船.docx"
+ },
+ {
+  "id": "182",
+  "num": 182,
+  "sub": 0,
+  "title": "要不要投降",
+  "words": 1627,
+  "file": "chapters/182_要不要投降.md",
+  "source": "182. 要不要投降.docx"
+ },
+ {
+  "id": "183",
+  "num": 183,
+  "sub": 0,
+  "title": "故事梗概",
+  "words": 1374,
+  "file": "chapters/183_故事梗概.md",
+  "source": "183. 故事梗概.docx"
+ },
+ {
+  "id": "184",
+  "num": 184,
+  "sub": 0,
+  "title": "兄弟嫌隙",
+  "words": 1303,
+  "file": "chapters/184_兄弟嫌隙.md",
+  "source": "184. 兄弟嫌隙.docx"
+ },
+ {
+  "id": "185",
+  "num": 185,
+  "sub": 0,
+  "title": "点染色",
+  "words": 1057,
+  "file": "chapters/185_点染色.md",
+  "source": "185. 点染色.docx"
+ },
+ {
+  "id": "186",
+  "num": 186,
+  "sub": 0,
+  "title": "介绍铸币局",
+  "words": 902,
+  "file": "chapters/186_介绍铸币局.md",
+  "source": "186. 介绍铸币局.docx"
+ },
+ {
+  "id": "187",
+  "num": 187,
+  "sub": 0,
+  "title": "INTP",
+  "words": 451,
+  "file": "chapters/187_INTP.md",
+  "source": "187. INTP.docx"
+ },
+ {
+  "id": "188",
+  "num": 188,
+  "sub": 0,
+  "title": "我思故我在",
+  "words": 682,
+  "file": "chapters/188_我思故我在.md",
+  "source": "188. 我思故我在.docx"
+ },
+ {
+  "id": "189",
+  "num": 189,
+  "sub": 0,
+  "title": "笨拙",
+  "words": 526,
+  "file": "chapters/189_笨拙.md",
+  "source": "189. 笨拙.docx"
+ },
+ {
+  "id": "190",
+  "num": 190,
+  "sub": 0,
+  "title": "一夫一妻制",
+  "words": 585,
+  "file": "chapters/190_一夫一妻制.md",
+  "source": "190. 一夫一妻制.docx"
+ },
+ {
+  "id": "191",
+  "num": 191,
+  "sub": 0,
+  "title": "刺杀",
+  "words": 442,
+  "file": "chapters/191_刺杀.md",
+  "source": "191. 刺杀.docx"
+ },
+ {
+  "id": "192",
+  "num": 192,
+  "sub": 0,
+  "title": "左膀右臂",
+  "words": 565,
+  "file": "chapters/192_左膀右臂.md",
+  "source": "192. 左膀右臂.docx"
+ },
+ {
+  "id": "193",
+  "num": 193,
+  "sub": 0,
+  "title": "一直送人头",
+  "words": 654,
+  "file": "chapters/193_一直送人头.md",
+  "source": "193. 一直送人头.docx"
+ },
+ {
+  "id": "194",
+  "num": 194,
+  "sub": 0,
+  "title": "叙旧——和苏舞的关系",
+  "words": 2308,
+  "file": "chapters/194_叙旧——和苏舞的关系.md",
+  "source": "194. 叙旧——和苏舞的关系.docx"
+ },
+ {
+  "id": "195",
+  "num": 195,
+  "sub": 0,
+  "title": "被埋伏",
+  "words": 583,
+  "file": "chapters/195_被埋伏.md",
+  "source": "195. 被埋伏.docx"
+ }
+]

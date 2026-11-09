@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>盒子宇宙全景图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* 单一浅色主题：低对比的灰蓝底 + 深墨字，减少阅读疲劳；每屏只讲一件事 */
+  --bg:#EEF1F4; --card:#FFFFFF; --ink:#18202A; --mute:#66717E; --line:#D5DBE2; --accent:#0F6E73;
+  --l1:#E39B2D; --l2:#3B82C4; --l3:#8E5CC2; --l4:#C8473B; --l5:#3FA34D; --l6:#D9678F; --l7:#18202A; --l0:#AEB6C0;
+  --font:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.7;letter-spacing:.02em}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px 120px}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 16px 8px;border-bottom:1px solid var(--line)}
+header h1{margin:0 0 8px;font-size:22px;font-weight:900;text-align:left}
+nav{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;max-width:720px;margin:0 auto}
+nav button{border:2px solid var(--line);background:var(--card);border-radius:12px;padding:8px 2px;font-weight:700;font-size:17px;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.hd{max-width:720px;margin:0 auto}
+section{display:none;padding-top:16px}
+section.on{display:block}
+.big{font-size:26px;font-weight:900;line-height:1.35;margin:4px 0 12px;text-wrap:balance}
+.sub{color:var(--mute);font-size:16px;margin:0 0 14px}
+/* 七层条 */
+.bars{display:grid;gap:8px;margin-bottom:20px}
+.bar{display:grid;grid-template-columns:5.2em 1fr 2.2em;align-items:center;gap:8px;font-weight:700}
+.bar .track{height:22px;background:var(--line);border-radius:11px;overflow:hidden}
+.bar .fill{height:100%;border-radius:11px}
+.bar .num{text-align:right;font-variant-numeric:tabular-nums}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:2px 10px;border-radius:999px;font-weight:700;font-size:15px;color:#fff;white-space:nowrap}
+/* 地图 */
+.legend{display:flex;flex-wrap:wrap;gap:6px 8px;margin:0 0 10px}
+.legend .k{display:inline-flex;align-items:center;gap:6px;font-size:15px;color:var(--mute)}
+.sym{width:16px;height:16px;border-radius:50%;display:inline-block}
+.mapbox{background:var(--card);border-radius:16px;padding:8px 4px;overflow-x:auto}
+.maphead{display:grid;grid-template-columns:3.4em repeat(8,1fr);font-size:14px;font-weight:900;text-align:center;position:sticky;top:0}
+svg text{font-family:var(--font)}
+.row{cursor:pointer}
+.row:hover rect.hit{fill:#E7EEF2}
+/* 卡片 */
+.cards{display:grid;gap:14px}
+.card{background:var(--card);border-radius:18px;padding:16px;border:2px solid var(--line)}
+.card h3{margin:0 0 10px;font-size:22px;font-weight:900}
+.opts{display:grid;gap:8px}
+.opt{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;border:2px solid var(--line);border-radius:12px;padding:8px 12px;background:#F7F9FA;cursor:pointer;text-align:left;width:100%}
+.opt[aria-pressed="true"]{border-color:var(--accent);background:#E2F1F1;box-shadow:inset 6px 0 0 var(--accent)}
+.opt b{font-size:19px}
+.pills{display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}
+.pill{font-size:14px;font-weight:700;padding:1px 8px;border-radius:8px;background:var(--line);color:var(--ink);font-variant-numeric:tabular-nums;border:0;cursor:pointer}
+.rec{font-size:14px;color:var(--accent);font-weight:900}
+.eq{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:10px;text-align:center}
+.eq .side{background:#F7F9FA;border-radius:12px;padding:10px 6px;font-weight:900;font-size:20px;line-height:1.35}
+.eq .op{font-size:30px;font-weight:900;color:var(--accent)}
+.ev{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap;align-items:center;color:var(--mute);font-size:15px}
+.bin{border-left:10px solid}
+.d{border-radius:18px;padding:12px 12px 12px;border:3px solid;margin-top:8px}
+.d .lb{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.d .lb b{font-size:19px}
+.d .lie{font-size:16px;color:var(--mute);margin:2px 0 4px}
+.bin h3{display:flex;justify-content:space-between;align-items:baseline}
+.bin .cnt{font-size:30px;font-weight:900;font-variant-numeric:tabular-nums}
+.grid{display:flex;flex-wrap:wrap;gap:6px}
+.grid .pill{font-size:16px;padding:4px 10px}
+.pair{display:inline-flex;align-items:center;gap:4px;background:#F7F9FA;border-radius:10px;padding:3px 6px}
+.pair span{color:var(--mute);font-weight:900}
+/* 底部弹出卡 */
+#sheet{position:fixed;left:0;right:0;bottom:0;z-index:10;background:var(--card);border-radius:20px 20px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.18);padding:16px 20px 24px;transform:translateY(110%);transition:transform .2s}
+#sheet.on{transform:none}
+#sheet .in{max-width:720px;margin:0 auto}
+#sheet .no{font-size:15px;color:var(--mute);font-weight:700}
+#sheet h2{margin:2px 0 8px;font-size:24px;font-weight:900;line-height:1.35}
+#sheet p{margin:8px 0 10px;font-size:19px}
+#sheet .tags{display:flex;gap:6px;flex-wrap:wrap}
+#sheet .x{position:absolute;right:14px;top:10px;border:0;background:var(--line);border-radius:50%;width:40px;height:40px;font-size:22px;cursor:pointer}
+@media (prefers-reduced-motion:reduce){#sheet{transition:none}}
+</style>
+</head>
+<body>
+<header>
+  <div class="hd">
+    <h1>盒子宇宙 · 全景图</h1>
+    <nav role="tablist">
+      <button role="tab" data-v="qa">问答</button>
+      <button role="tab" data-v="doll">套娃</button>
+      <button role="tab" data-v="map">地图</button>
+      <button role="tab" data-v="decide">拍板</button>
+      <button role="tab" data-v="links">接上了</button>
+      <button role="tab" data-v="clean">清理</button>
+    </nav>
+  </div>
+</header>
+<div class="wrap">
+
+<section id="v-qa">
+  <div class="big">你的 26 问：全书的脊梁</div>
+  <p class="sub">你笔记里的问答原话。颜色＝正文现在的状态。</p>
+  <div class="legend">
+   <span class="chip" style="background:var(--l5)">正文有了</span>
+   <span class="chip" style="background:#C8473B">和正文打架</span>
+   <span class="chip" style="background:var(--l0)">正文还没写</span>
+  </div>
+  <div class="cards" id="qa"></div>
+</section>
+
+<section id="v-doll">
+  <div class="big">套娃：一层套一层</div>
+  <p class="sub">顺序暂定 ✔。最里面是秋水的小屋，每往外一层，就揭穿里面那层的谎。</p>
+  <div class="card" style="border-color:var(--accent);margin-bottom:8px"><b style="font-size:19px">「每一层的出现，也是一种意识的刻画。」</b><div class="sub" style="margin:4px 0 0">你的原话 · 11-04</div></div>
+  <div id="doll"></div>
+</section>
+
+<section id="v-map">
+  <div class="big">第 4 层太胖，第 7 层太瘦</div>
+  <div class="bars" id="bars"></div>
+  <div class="big" style="font-size:22px">每一章在哪一层</div>
+  <p class="sub">从上往下是章号。线条左右乱跳，就是章节顺序乱。点任意一行看这一章。</p>
+  <div class="legend" id="legend"></div>
+  <div class="mapbox"><div class="maphead" id="maphead"></div><svg id="map" width="100%" role="img" aria-label="204 个章节按七层分布"></svg></div>
+</section>
+
+<section id="v-decide">
+  <div class="big">只有你能定的 8 件事</div>
+  <p class="sub">点一个选项就算定了，会记在这台手机上。绿字是我的建议。</p>
+  <div class="cards" id="decide"></div>
+</section>
+
+<section id="v-links">
+  <div class="big">读完后接上的 10 条线</div>
+  <p class="sub">数字是证据章号，点开看。</p>
+  <div class="cards" id="links"></div>
+</section>
+
+<section id="v-clean">
+  <div class="big">先清理，再重排</div>
+  <p class="sub">三个筐。清完大约少 25 个文件。</p>
+  <div class="cards" id="clean"></div>
+</section>
+</div>
+
+<div id="sheet" aria-live="polite"><div class="in" id="sheetIn"></div></div>
+
+<script>
+const D=[{"id": "1", "t": "一个没有门的世界", "l": 1, "s": "何亍住在没有门的房间里，靠脑内芯片洛神一号生活", "w": 4250, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "2", "t": "破茧组", "l": 2, "s": "太空中，盒子绕着太阳分轨道、分层运行", "w": 6174, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "3", "t": "秋水和洛神", "l": 1, "s": "何亍醒来时失去了记忆，用睡醒的次数『醒』来计时，并开始写日记", "w": 4442, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "3.1", "t": "秋水的盒子过程", "l": 1, "s": "内心独白：白秋水陷入「抓住目标→无常→恐惧→自暴自弃」的循环", "w": 2133, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "3.2", "t": "对民主的反思", "l": 4, "s": "立法王理论：少数心量强大的人把自己的认知框架施加给全人类，形成层层嵌套的等高…", "w": 1535, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "3.3", "t": "内心的冲动", "l": 5, "s": "秋水和曦轩重逢，形同陌路", "w": 1319, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "3.4", "t": "荷尔蒙反噬和对女人意识等高线的理解", "l": 1, "s": "秋水拒绝给班尼一个明确的感情答复，夜里又后悔", "w": 1061, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "3.5", "t": "盒子觉醒艺术", "l": 2, "s": "碎片：秋水感到『艺术』这种东西消失了", "w": 472, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "3.6", "t": "对时间的理解", "l": 5, "s": "哲学笔记：时间→变化→可能性；「实体即主体」", "w": 282, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "3.7", "t": "秋水找工作", "l": 1, "s": "和第 1 章开头是同一场景的另一个版本：秋水又失业了，估算自己约五千岁，默认…", "w": 826, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "3.8", "t": "秋水对芯片的逆反", "l": 1, "s": "童年回忆：课堂上老师带孩子们齐读『压缩饼干是唯一的食物』，秋水说『不好吃』，…", "w": 623, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "3.9", "t": "现实和梦境开始交接", "l": 2, "s": "秋水总梦见一扇门，门后渗出红光", "w": 1788, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "4", "t": "史前的故事", "l": 4, "s": "讲盒子诞生之前的文明史，由多段草稿拼成：2050 年，人们按月向国家『报税』…", "w": 16752, "d": null, "o": false, "r": 0, "h": false, "n": 6}, {"id": "5", "t": "历史分期", "l": 4, "s": "先给出六纪元年表：偶得→期望(威尼斯银行)→后期望(人口爆炸)→封装(手柄组…", "w": 5300, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "6", "t": "秋水的解救过程", "l": 2, "s": "秋水被触手绑在白色空间里，一个白斗笠首领站在高台上", "w": 2420, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "7", "t": "张瞩的疑惑", "l": 3, "s": "张嘱被叫作叛徒之子、『糯米种子』", "w": 3254, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "8", "t": "取卵人的故事", "l": 4, "s": "讲梦链时代：VR 梦链越来越真实，很多人永久进入；交精子和卵子成了『生物资产…", "w": 8719, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "9", "t": "NT清除计划", "l": 3, "s": "揭示疫苗的真相：疫苗是用来摧毁 NT 型人格、阻止人类觉醒的，SJ 型人格不…", "w": 1478, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "10", "t": "发现的源头——照片", "l": 3, "s": "张嘱有长期头痛", "w": 2976, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "11", "t": "极化针和太阳风暴", "l": 3, "s": "打了极化针的人指标变红，就被众人咒骂、抬走、发配到糯米", "w": 5125, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "12", "t": "13区的表演", "l": 2, "s": "苏舞向各区家人演讲：祖先放弃永生留守盒子之外，是『真正的摆渡人』，接着宣布『…", "w": 2954, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "13", "t": "明星的气场", "l": 2, "s": "一位明星走过的地方，人们都中了幻术，动作变得简单重复，像卡通里的群演", "w": 1050, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "14", "t": "13区最大的明星的死", "l": 3, "s": "一个脱离了代码体质的逃犯(当年的单打之王)被追杀者用『源码审判令』处决，追杀…", "w": 2642, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "15", "t": "秋水回到地面", "l": 2, "s": "秋水和曦轩、娜美、梓落乘飞船着陆，距离人类上次离开地面已经过去旧历 4000…", "w": 1131, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "16.1", "t": "老人的回忆", "l": 6, "s": "一位老人在壁炉前用鹅毛笔开始写回忆录", "w": 445, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "17", "t": "破茧组和博士的终局", "l": 3, "s": "秋水在走廊里射杀改造人(WIP 种人)，然后走向一扇门缝渗着红光和血水的门", "w": 1805, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "18", "t": "秋水和娜美捅破窗户纸", "l": 5, "s": "有人替秋水去送死，秋水自责「为什么死的不是我」", "w": 1105, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "19", "t": "情绪觉醒——诗歌朗诵", "l": 5, "s": "秋水向第六纪元的人们演讲：「我们是战士……就是行走的诗歌」，然后朗诵纪伯伦的…", "w": 475, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "20.1", "t": "秋水与意义工厂", "l": 1, "s": "第 1 章齿轮工厂那一段的另一个版本(和第 1 章几乎逐字相同)", "w": 852, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "21.1", "t": "接引人", "l": 2, "s": "盒子群像蜂群一样逐渐合拢，只剩一道空隙，飞船必须在它关闭前冲出去", "w": 757, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "22", "t": "25号宇宙的理论基础", "l": 4, "s": "讲述者解释：决定人口上限的是社会关系，而不是资源", "w": 1821, "d": null, "o": false, "r": 1, "h": false, "n": 2}, {"id": "23.1", "t": "情绪碎片·学校", "l": 1, "s": "白秋水在学校里精通各种套路(作文结尾一定要升华到对领袖的爱戴，任何文章都能概…", "w": 616, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "23.2", "t": "情绪碎片·梓洛的死", "l": 5, "s": "刚出盒子的秋水怀疑一切，质问曦轩，人醒着为什么就一定比在虚假的幸福里好", "w": 3269, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "24", "t": "历史之山 和老者的对话", "l": 4, "s": "张嘱在历史之山见到一位被遗忘的老者，听他讲纪元的另一套分法(偶得/发现/增长…", "w": 3922, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "25", "t": "代码体质丢失", "l": 3, "s": "两个家族成员在去掉代码体质之后，第一次感到无法控制的强烈情绪，觉得这才是真的…", "w": 527, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "26", "t": "盒子机制", "l": 3, "s": "讨论代码家族为什么要升级盒子：拆解水星级别的能量，用来提高沉浸度、降低逃出欲…", "w": 933, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "27", "t": "学校", "l": 1, "s": "白秋水回忆：他年轻时认为洗脑不存在，十多年后却被刺猬的一首童谣弄得神魂颠倒，…", "w": 644, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "28", "t": "小说家", "l": 6, "s": "府俟向宴曦轩讲解『径廊道』：一种是特定条件下的死亡通道(向往死亡、不留恋生、…", "w": 3687, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "29", "t": "历史分期的讲法", "l": 4, "s": "六纪元年表(和第 5 章完全相同)，加上人物设定：秋水是关键先生，受红光困扰…", "w": 1038, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "30", "t": "秋水的充实感和迟到", "l": 1, "s": "和第 1 章后半段的迟到、被解雇几乎逐字相同", "w": 354, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "31", "t": "秋水不做梦，找博士解惑", "l": 2, "s": "秋水发现破茧组里的其他人都不做梦，只有他总被同一个梦惊醒，连在盒子里也一样", "w": 825, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "32", "t": "秋水和阳明的对话，一次抉择", "l": 4, "s": "阳明说只需要八十年就能彻底解决问题，『少数人决定多数人的生活方式』", "w": 267, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "33", "t": "红光与清醒", "l": 6, "s": "⭐ 开头三行是作者批注：「白秋水就是那个被宓天踪杀死的孩子", "w": 1356, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "34", "t": "秋水的状态，独处", "l": 5, "s": "失去刺猬之后，白秋水独居，写作、养君子兰、观呼吸", "w": 1380, "d": null, "o": false, "r": 0, "h": false, "n": 0}, {"id": "35", "t": "货币原则与怪物", "l": 6, "s": "府俟解释『货币原罪』：每一次交易都在传递能量，积累太多负面能量，转生时就可能…", "w": 1350, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "36", "t": "胥子诺的纠结", "l": 6, "s": "刑警胥子诺执着于黎姗姗的案子", "w": 410, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "37", "t": "秋水做爱时的感悟", "l": 5, "s": "秋水和妓女做爱，由此感悟：毫无顾忌地显露自己的丑陋就是一种美德，内外如一才是…", "w": 581, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "38", "t": "秋水关于世界本源的探讨", "l": 7, "s": "「为什么存在万物而非一无所有」这个问题本身就问错了，因为万物本来就不存在，一…", "w": 348, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "39", "t": "秋水自认为是个异类的心路", "l": 1, "s": "秋水厌恶猎头公司把人商品化，并按贝叶斯式的反复确认，最终接受了『我就是个异类…", "w": 526, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "40", "t": "秋水被裁员后遇到的奇怪的人", "l": 1, "s": "秋水被解雇了", "w": 507, "d": null, "o": false, "r": 0, "h": false, "n": 0}, {"id": "41", "t": "妓女与创作灵感", "l": 5, "s": "白秋水发现，和陌生女人做爱之后创作灵感会喷涌，于是开始有意利用这个规律", "w": 783, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "42", "t": "秋水与母亲关于钱的探讨", "l": 4, "s": "秋水对母亲说自己是一只『猫头鹰』，提出『作家自利性』：世界并没有客观规律，只…", "w": 2456, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "43", "t": "秋水关于自杀的思考", "l": 5, "s": "秋水对比中日两国的死亡观(儒家讳言死亡，日本以死为美)，觉得孝道是他精神自由…", "w": 1086, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "44", "t": "爱与死亡", "l": 5, "s": "秋水的演讲：我们欣赏古人的成功却嫉妒同龄人，是因为同龄人分走了『爱』；归根结…", "w": 1481, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "45", "t": "康城火车站", "l": 6, "s": "康城火车站，花花公子黎曦突然吻了一个火车上认识的女生，塞给她一张留有电话的纸…", "w": 822, "d": null, "o": false, "r": 0, "h": false, "n": 0}, {"id": "46", "t": "卵之守护者", "l": 4, "s": "取卵人的另一个版本：取卵人用念力『注活』卵子，注活过的孩子情绪力超强，被称为…", "w": 917, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "47", "t": "被抛入盒子系统", "l": 2, "s": "和第 12 章后半段(进入盒子森林、推断 82589933 号盒子在里层)逐…", "w": 1304, "d": "12", "o": false, "r": 0, "h": false, "n": 1}, {"id": "48", "t": "质问老师", "l": 3, "s": "雨欣质问李简：NT 型的人是不是全都死在了盒子里", "w": 504, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "49", "t": "文明封装 回到历史", "l": 4, "s": "李显讲：第四纪元末封装人类文明时，操作人员失误，中国文明完全没有被收进去", "w": 2797, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "50", "t": "意义法则 森林法则", "l": 3, "s": "张嘱成为家族最年轻的表演者", "w": 852, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "51", "t": "秋水的低能量状态", "l": 1, "s": "白秋水刚上大学时有强迫症，像中了病毒弹窗一样内耗", "w": 882, "d": null, "o": false, "r": 0, "h": false, "n": 0}, {"id": "52", "t": "汴大后的面对", "l": 5, "s": "白秋水在汴大湖边等待康复，一等就是八年，最终领悟到出路是『直面』", "w": 897, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "53", "t": "死亡构图", "l": 6, "s": "宴曦轩在协助胥子诺调查黎姗姗之死", "w": 1101, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "54", "t": "世俗中的办事", "l": 6, "s": "黎曦和父亲(黎氏基金)闹翻，离家出走，自己租了一间一居室，去工商局注册公司", "w": 1087, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "55", "t": "总设计师演讲", "l": 4, "s": "和第 4 章末尾的总设计师演讲逐字相同", "w": 1472, "d": "4", "o": false, "r": 0, "h": false, "n": 2}, {"id": "56", "t": "鼠人部落与集体意识", "l": 6, "s": "鼠人部落是『反地藏王计划』的一部分，伪装成茹毛饮血的样子留在地底，以保留微小…", "w": 1284, "d": null, "o": true, "r": 0, "h": false, "n": 2}, {"id": "57", "t": "茧外之果", "l": 4, "s": "秋水在『茧外之国』的实验室醒来，芯片已被取出，他第一次凭自己的意志决定站还是…", "w": 3501, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "58", "t": "香设计与创业路", "l": 6, "s": "张家二公子和秦局长(外号『秦广王』)勾结，把黎曦的『香设计』列进了刁难名单", "w": 1800, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "59", "t": "混乱的爱情", "l": 6, "s": "康城都市线的长篇(6594 字)", "w": 6594, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "60", "t": "白秋水与小小人", "l": 6, "s": "白秋水回到家，发现鼠标的位置变了：有人来过", "w": 321, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "61", "t": "黎曦与秘密组织", "l": 6, "s": "黎曦成了律师，助理是一小，他只接有挑战的案子，比如盗墓贼卖汉墓金砖援助残疾儿…", "w": 2927, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "62", "t": "秋水之死与秋水与黎曦的遇见", "l": 6, "s": "11 月 5 日清晨，白秋水被发现死在自己房间，他觉得『现在去死会非常富有诗…", "w": 1424, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "63", "t": "黎安的决心，新版纸币", "l": 6, "s": "黎安负责康城新版纸币的定稿，他深知『人们相信什么，什么就是货币』", "w": 2229, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "64", "t": "心爱的人回不来", "l": 6, "s": "刺猬在海外被举报非法打工，被移民局拦下，回不了康城", "w": 1432, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "65", "t": "宓天踪的转折", "l": 6, "s": "府俟给黎曦讲他曾祖的故事", "w": 1368, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "66", "t": "多年前的一堂课", "l": 6, "s": "白秋水看着一瓶毒药，回忆中学时的一堂政治课", "w": 2112, "d": null, "o": false, "r": 0, "h": true, "n": 2}, {"id": "67", "t": "红色的荣耀", "l": 6, "s": "在阴雨连绵的宴湾镇，曦轩过着『自动巡航』一样重复的生活，每天在同一个红灯前看…", "w": 1589, "d": null, "o": false, "r": 0, "h": true, "n": 2}, {"id": "68", "t": "梦境复苏", "l": 5, "s": "秋水来到一个纯白的世界，见到一个白袍光头小孩：「因为我就是你，我也是万物」", "w": 2350, "d": "121", "o": false, "r": 0, "h": false, "n": 2}, {"id": "69", "t": "秋水去掉芯片", "l": 2, "s": "秋水第一次主动走出房门，被邻居女孩的笑容弄得脸红", "w": 2084, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "70", "t": "秋水的愤怒", "l": 2, "s": "秋水睡去又回到破茧组的房间，看到大理石石柱，听到珍珍问早安，欣喜若狂", "w": 969, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "71", "t": "伟大的演说沉默者和反转时代的人", "l": 5, "s": "梓络发表演说：语言是切割时间长河的切片，一说出口就失去真实；人们一直处在『自…", "w": 1842, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "72", "t": "与妓女的问题", "l": 6, "s": "四十年不近女色的黎安第一次走进妓院，墙上挂着《亚威农少女》", "w": 821, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "73", "t": "地铁上的不安", "l": 6, "s": "身居高位的黎安仍坚持坐地铁", "w": 446, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "74", "t": "康城圣考与崩溃", "l": 1, "s": "白秋水备战康城圣考，对上课的每一句话都不肯放过，错过一句就下课找老师『清算』", "w": 2296, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "75", "t": "黎姗姗", "l": 6, "s": "宴曦轩向柳局长指控乔梓落和黎姗姗之死有关，证据只有黄金分割照片，被轰出办公室", "w": 2330, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "76", "t": "美术老师", "l": 6, "s": "三十出头的宴曦轩被路过学生的一句『他觉得我们有特异功能吗』带回童年", "w": 1949, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "77", "t": "警察调查", "l": 6, "s": "宴曦轩坚信自己十个月大就有记忆：父亲带他去一个有神秘灯火的地方，拿出一个寒光…", "w": 868, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "78", "t": "盗墓贼", "l": 6, "s": "居酒屋里胥子诺说相信宴曦轩，却因为答应过府俟，隐瞒了自己见过的那个盗墓贼", "w": 2207, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "79", "t": "胶皮数据", "l": 6, "s": "解释信息胶片：走过径廊道时物质和信息都是碎片化传送再重组的，胶片是重组信息(…", "w": 1100, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "80", "t": "甩掉女人", "l": 1, "s": "白秋水和母亲聊完，发现母亲的爱要靠赚钱换，反而觉得这种爱廉价、不要也罢，为自…", "w": 602, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "81", "t": "会计面子与坍缩的爱", "l": 1, "s": "白秋水学会计，觉得这个专业配不上自己的气质，逃课去汴大图书馆", "w": 3867, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "82", "t": "阿玲与肉体", "l": 1, "s": "开头两行碎句：『白秋水曾经鼓吹不坍缩的人生』『秋水，你的雄心壮志呢』", "w": 923, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "83", "t": "与美玲的初遇", "l": 1, "s": "秋水入夜住进武夷山一家青年旅馆，客厅里五个人：像宋江的老板、做门窗销售的成蹊…", "w": 1413, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "84", "t": "穷与富，下南洋", "l": 4, "s": "街头一个邋遢男子救小孩时失手把孩子摔到了妈妈身上，被围观的人指责手脏、舍不得…", "w": 1182, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "85", "t": "晓云与破空", "l": 1, "s": "同事林晓筠轻描淡写地告诉秋水：阮破空自杀了，上吊或者喝药，说不清", "w": 2254, "d": null, "o": false, "r": 1, "h": false, "n": 4}, {"id": "86", "t": "科技绑架", "l": 4, "s": "秋水对着出故障的电脑一筹莫展，越来越急躁直到崩溃，痛恨这个被科技绑架的时代", "w": 473, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "87", "t": "一切都是空 为何有大师", "l": 6, "s": "由几段碎片拼成", "w": 1223, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "88", "t": "盒子里的MBTI", "l": 2, "s": "娜美说她眼里所有人都是行走的人格标签，一共 16 种，她感受不到任何人的情感…", "w": 2768, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "89", "t": "MBTI续", "l": 6, "s": "碎片拼贴", "w": 1376, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "90", "t": "自序与后记", "l": null, "s": "作者的自序：为『脑海回路丰富又不能云淡风轻』的白日梦者写作", "w": 3025, "d": null, "o": true, "r": 1, "h": false, "n": 4}, {"id": "91", "t": "拯救文化", "l": 4, "s": "信息即将被全部格式化，一个人只有一分钟挑选要保存的书", "w": 466, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "92", "t": "端甫祭祀会议", "l": 4, "s": "代码家族的章甫、祭祀开会", "w": 2425, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "93", "t": "家族斗兽场", "l": 1, "s": "洛白在糯米种子中开设斗兽场：打败他，他就跳进交接齿轮；观众用『鹅蛋币』下注，…", "w": 762, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "94", "t": "洛白的回忆", "l": 4, "s": "有人教洛白：鹅蛋是毒品，要唤醒糯米只能用更大的毒品，也就是真正的血；开角斗场…", "w": 1798, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "95", "t": "秋水观察盒子", "l": 2, "s": "秋水第一次以旁观者视角看盒子运动：无数盒子像蜜蜂一样飞舞、两两避让、没有声音…", "w": 1488, "d": null, "o": false, "r": 0, "h": true, "n": 4}, {"id": "96", "t": "博士之死与中英文", "l": 2, "s": "中英混写的草稿", "w": 2967, "d": null, "o": false, "r": 0, "h": false, "n": 6}, {"id": "97", "t": "雾火山城的双重结界", "l": 4, "s": "开头是对冈仁波齐的颂词：雾火山城在冈仁波齐山脚下繁衍，恢复和毁灭都靠这座神山…", "w": 788, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "98", "t": "血液系 大脑系", "l": null, "s": "(原稿标『第67章』) 作者的大段设定笔记", "w": 2369, "d": null, "o": true, "r": 0, "h": false, "n": 5}, {"id": "99", "t": "一半人为了另一半人", "l": 4, "s": "张嘱去见一个人，把自己宝剑上的宝石摘下来扔还给他", "w": 650, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "100", "t": "尘归尘 土归土", "l": 7, "s": "用反证法证明万物皆虚妄：假设万物存在，则万物皆有源头；源头也有源头，那它就不…", "w": 355, "d": "99", "o": false, "r": 0, "h": false, "n": 3}, {"id": "101", "t": "初露峥嵘 历史山之下", "l": 4, "s": "13 岁的张嘱在竞技场对阵一个光头大个子，他退到墙边借力蹬墙，利用对方仰头看…", "w": 3602, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "102", "t": "反思猎头手柄", "l": 4, "s": "碎片", "w": 582, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "103", "t": "又搞砸了", "l": 2, "s": "第五纪元，没有日历和时间，秋水估计自己活了大约五千年", "w": 1303, "d": "1", "o": false, "r": 0, "h": false, "n": 4}, {"id": "104", "t": "学术圈地", "l": 4, "s": "猎头手柄的起源：一群绝顶聪明又不择手段的学者，用数据推翻了古典经济学的理性人…", "w": 945, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "105", "t": "纪元划分", "l": 4, "s": "有人给秋水讲『过去的故事』：第一纪元之前人类 GDP 基本不变；第二纪元人们…", "w": 979, "d": null, "o": false, "r": 1, "h": false, "n": 4}, {"id": "106", "t": "门开了", "l": 2, "s": "秋水的盒子被打开，一群穿纯白制服、袖标『KF』的人冲进来把他拖走", "w": 851, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "107", "t": "化验报告 重启戴森球", "l": 4, "s": "黑斗篷的 xx 认定糯米种子天生懒惰懦弱，等着化验报告证明，结果报告推翻了他…", "w": 2739, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "108", "t": "张嘱苏舞和解", "l": 4, "s": "张嘱对苏舞感情复杂：苏舞离规则最近，看破不说破，张嘱却总拒绝不了他的邀请", "w": 836, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "109", "t": "扔掉芯片", "l": 2, "s": "秋水提着一颗头颅踉跄走来：『我杀了他", "w": 2379, "d": null, "o": false, "r": 0, "h": false, "n": 6}, {"id": "110", "t": "苏舞篇", "l": 4, "s": "苏舞流着泪请吴钩(钩子，叫他哥)答应一件事：把自己的记忆传给吴钩，让他带着这…", "w": 1509, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "111", "t": "大船小船会议", "l": 4, "s": "开头是作者的章节卡片：借大船小船会议、极化针、艺术品黑市、传播泡泡引出代码家…", "w": 2008, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "112", "t": "人造子宫的破坏", "l": 4, "s": "苏舞发现社会不可避免地变成金字塔：过去每个人都创造价值，如今大多数人不再创造…", "w": 595, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "113", "t": "苏舞大船", "l": 4, "s": "巡逻队长吴钩开着老摩托艇『复原号』冲到塔楼顶层，急报盒子崩解增多", "w": 3127, "d": null, "o": false, "r": 0, "h": true, "n": 4}, {"id": "114", "t": "子昂", "l": 2, "s": "『我们为什么要有政府", "w": 3266, "d": null, "o": false, "r": 0, "h": true, "n": 4}, {"id": "115", "t": "退票", "l": 3, "s": "火车因下雪停在襄汾站，铁路方要求退票", "w": 787, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "116", "t": "破茧组的手术", "l": 2, "s": "秋水摘除芯片后三天就醒了，没有任何紊乱，博士说从未见过", "w": 3190, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "117", "t": "观呼吸", "l": 5, "s": "谢磊非要和秋水比赛『思虑少』，已经输了三次", "w": 713, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "118", "t": "打牌", "l": 2, "s": "秋水对牌友说自己最近思考总是一顿一顿的，像被什么东西看着", "w": 1152, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "119", "t": "喜欢一个人的感受", "l": 1, "s": "张嘱当着全班向 xx 挑战下棋，紧张得棋子掉在地上，走了一招险棋，最终还是输…", "w": 1511, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "120", "t": "糯米种子", "l": 4, "s": "『糯米种子，连男爵也无法获得的人", "w": 3100, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "121", "t": "不可触摸——进入意识操纵状态", "l": 5, "s": "秋水来到纯白的世界，像幽灵一样飘向一个光头小孩，感觉自己在一个事先编好的剧本…", "w": 2213, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "122", "t": "艺术", "l": 4, "s": "碎片", "w": 1340, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "123", "t": "我只是一串代码而已", "l": 6, "s": "两段", "w": 1053, "d": null, "o": false, "r": 1, "h": false, "n": 5}, {"id": "124", "t": "原始对决", "l": 4, "s": "『糯米通关赛』第一场家族人对糯米：代码家族的苗圃对糯米英雄洛白，两人是朋友", "w": 1645, "d": null, "o": false, "r": 0, "h": true, "n": 5}, {"id": "125", "t": "张瞩投降破茧组", "l": 4, "s": "手下报告有代码家族的人主动来投", "w": 640, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "126", "t": "叛乱回溯", "l": 4, "s": "前半是设定笔记：那场叛乱是为了夺回代码家族原本的生活方式；原来的家族理性、没…", "w": 2363, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "127", "t": "吉尔伽美什", "l": 3, "s": "一个叫洛白『哥』的人回来，说另一个 xx 在家族那边过得不好，为了出人头地去…", "w": 2746, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "128", "t": "兄弟殊途", "l": 4, "s": "苏舞的女儿苏酥扑向吴钩叔叔，她继承了父亲灰色的眼睛，那是『代码核心』的标志", "w": 1303, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "129", "t": "至人若鉴", "l": 5, "s": "讲述者引庄子『至人之用心若镜，不将不迎，应而不藏』：中国经典虽已毁，引文里还…", "w": 1098, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "130", "t": "看到泡泡", "l": 4, "s": "前半段和第 111 章后半段相同(传播泡泡在苏舞头上爆裂，众人看不到他的念头…", "w": 2204, "d": null, "o": false, "r": 0, "h": false, "n": 6}, {"id": "131", "t": "发射塔", "l": 4, "s": "有人密谋：最好的『发射塔』是洛白，通过他体内的纳米机器人激活和 NP 的共振…", "w": 1236, "d": null, "o": false, "r": 1, "h": false, "n": 4}, {"id": "132", "t": "黎安和女人", "l": 6, "s": "黎安被工作压力和『清洗原罪金钱』耗尽元神，想找女人振作", "w": 470, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "133", "t": "王端甫", "l": 4, "s": "一场对王端甫的辩论", "w": 1185, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "134", "t": "真正的高贵", "l": 4, "s": "一个糯米女孩(xx)带张嘱穿过『反转楼梯』的秘密通道，来到糯米区：巨大的环形…", "w": 2216, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "135", "t": "医生与迟来的共鸣", "l": 4, "s": "张嘱听到新来的 xx 说『这太爽了吧』，直觉他与众不同，上前打招呼", "w": 3702, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "136", "t": "抑郁质", "l": 4, "s": "正文和第 126 章后半段逐字相同：李简抚养张嘱、五岁的木剑『木耳』丢失、不…", "w": 2024, "d": "126", "o": false, "r": 0, "h": false, "n": 2}, {"id": "137", "t": "决定世界的是女人", "l": 2, "s": "开头是秋水的感悟：最终决定世界标准的是女人，男人屈从于女人对『安全』的欲望，…", "w": 1375, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "138", "t": "胖子军团", "l": 4, "s": "代码家族把糯米编成『胖子军团』去攻打铸币局", "w": 2360, "d": null, "o": false, "r": 0, "h": true, "n": 4}, {"id": "139", "t": "秋水醒后", "l": 2, "s": "正文和第 116 章(破茧组的手术)逐字相同：秋水三天醒来、日记本、黑衣女子…", "w": 3192, "d": "116", "o": false, "r": 0, "h": false, "n": 1}, {"id": "140", "t": "分享盒子", "l": 2, "s": "拼接的几段", "w": 2730, "d": null, "o": false, "r": 0, "h": false, "n": 6}, {"id": "141", "t": "阳冥", "l": 2, "s": "博士对孩子们说为你们骄傲", "w": 467, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "142", "t": "杀了刺猬", "l": 6, "s": "黎安独自听滚石的《As Tears Go By》痛哭，觉得自己为木鸯、为曦儿…", "w": 1749, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "143", "t": "心智呼唤模式升级", "l": 4, "s": "大半是设定笔记和章节清单", "w": 2763, "d": null, "o": true, "r": 0, "h": false, "n": 4}, {"id": "144", "t": "黑色披风的竞选者", "l": 6, "s": "秋水又看到身披黑色披风的竞选者用煽情的演讲摄走众人的魂魄，自己的能量在耗散", "w": 2147, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "145", "t": "人工智能妥协", "l": 2, "s": "碎片和资料拼接", "w": 3027, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "146", "t": "小樱 梓洛 秋水恢复写作", "l": 6, "s": "拼接三段", "w": 2264, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "147", "t": "地藏王计划", "l": 1, "s": "开头三张章节卡片：①高级文明如何改写『地藏王计划』，就说内世界和外世界；『地…", "w": 2988, "d": null, "o": false, "r": 0, "h": true, "n": 5}, {"id": "148", "t": "秋水换裤子", "l": 2, "s": "小樱递给秋水一件颜色他从没见过、在他认知里根本不可能做成衣服的衣服，让他换上", "w": 383, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "149", "t": "人生可能性", "l": 1, "s": "第一人称独白", "w": 637, "d": null, "o": false, "r": 0, "h": false, "n": 1}, {"id": "150", "t": "苗圃之死", "l": 5, "s": "前半是第一人称的文学观：人有两种狗和蚂蚁没有的能力，把感受转化成另一种感受，…", "w": 1666, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "151", "t": "线索", "l": null, "s": "开头是元数据：书名『后真相』，作者署名『小说匠』，长篇、玄幻，时间 2021…", "w": 2471, "d": "98", "o": true, "r": 0, "h": false, "n": 4}, {"id": "152", "t": "皿城", "l": null, "s": "前半是章节卡片和设定：『意义工厂与食人工厂』；『皿城和巨人，内外世界，皿城的…", "w": 1790, "d": null, "o": true, "r": 0, "h": false, "n": 3}, {"id": "153", "t": "糯米和代码家族和解", "l": 3, "s": "这种探险以前从未发生，因为情绪、文学艺术没有介入，没人会有这种想法", "w": 1783, "d": null, "o": false, "r": 0, "h": true, "n": 4}, {"id": "154", "t": "尼比鲁和戴森党", "l": 4, "s": "『尼比鲁上有问题的答案", "w": 2562, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "155", "t": "宇宙规则", "l": 7, "s": "一个声音变了的入侵者闯进来", "w": 3412, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "156", "t": "洛白的转变", "l": 7, "s": "(接第 155 章) 通讯里说铸币局正在全力做『罪恶结算』压低人类频率，只能…", "w": 2771, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "157", "t": "噬魂者", "l": 4, "s": "吴钩把一个代码家族成员关进盒子：此人天生喜欢虐杀，不仅吞噬人的灵魂还毁人肉体…", "w": 1801, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "158", "t": "保护妻子", "l": 4, "s": "一个脱离代码家族的人(当年的『单打之王』)被追上，他求执行者放过怀孕的妻子", "w": 3407, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "159", "t": "哥哥别去，和一双鞋", "l": 1, "s": "秋水哀求哥哥别去，哥哥说这是我们第一次拥抱可能性和随机性", "w": 1336, "d": null, "o": false, "r": 0, "h": true, "n": 5}, {"id": "160", "t": "自我意识与暴怒", "l": 2, "s": "开头一句断句『为了保证地球』", "w": 686, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "161", "t": "剑鞘上的宝石", "l": 4, "s": "和第 108 章逐字相同：苏舞把佩刀上的宝石镶到张嘱剑上，教他『感受痛苦』，…", "w": 826, "d": "108", "o": false, "r": 0, "h": false, "n": 1}, {"id": "162", "t": "盒子融合与超级明星", "l": 2, "s": "由四张章节卡片和内容组成", "w": 3081, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "163", "t": "破茧组大败接引人", "l": 4, "s": "破茧组誓师：我们会带回一波又一波的人，直到祖先从盒子里出来获得自由", "w": 792, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "164", "t": "钥匙山", "l": null, "s": "作者的整理笔记(章节卡片：『需要写钥匙山和男主之间的关系』)", "w": 502, "d": null, "o": true, "r": 0, "h": false, "n": 3}, {"id": "165", "t": "蓝毛", "l": 2, "s": "会上蓝毛阴沉地对『教授』说不喜欢秋水", "w": 929, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "167", "t": "英文对话", "l": 4, "s": "几乎全是英文的草稿，带分镜提示(『过肩机位』『沉默，酒杯，戒指』)", "w": 1049, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "168", "t": "莫名其妙晕倒", "l": 4, "s": "开头一问一答：『为什么一定要用黎家的血", "w": 513, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "169", "t": "平衡 另一种潜流 魔鬼契约", "l": 4, "s": "王端甫命谢祭祀全力追捕一个去了糯米基地的孩子，谢祭祀说你哥哥也在那里，王端甫…", "w": 4784, "d": null, "o": false, "r": 1, "h": false, "n": 4}, {"id": "170", "t": "基因工具", "l": 5, "s": "一段讲述：人类的基因是天龙人、天琴人、天狼星人共同加进来的；只有人类会嗜血地…", "w": 1530, "d": null, "o": false, "r": 2, "h": false, "n": 4}, {"id": "171", "t": "拼图 传播泡泡 王端甫", "l": 4, "s": "张嘱对王端甫说：你认为胜者的系统就是最佳系统，但你的认识只是拼图的一部分，盒…", "w": 1833, "d": null, "o": false, "r": 1, "h": false, "n": 4}, {"id": "172", "t": "欲望的起伏", "l": 4, "s": "梓络能看见每个人的情绪，觉得自己在审视一群赤身裸体的丑陋男女：他们忘了呼吸，…", "w": 521, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "173", "t": "天台上的对话", "l": 3, "s": "秋水在天台上，一只纤细的手递来啤酒", "w": 793, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "174", "t": "梦里不知身是客", "l": 3, "s": "秋水这次是一名狙击手，进入角色时四肢和感官立即适应，他清楚地知道自己进入了角…", "w": 1114, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "175", "t": "茧外茧", "l": 7, "s": "茧外茧：思维永远能在外面找到下一层，掀开窗帘看到窗户，打开窗户看到世界，而世…", "w": 1422, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "176", "t": "痛苦是养料", "l": 3, "s": "一段独白：为什么无论哪个政党上台都有不公、脑残政策、每十年一次经济危机", "w": 1358, "d": null, "o": false, "r": 1, "h": false, "n": 4}, {"id": "177", "t": "往事", "l": 4, "s": "碎片集合", "w": 3838, "d": null, "o": false, "r": 1, "h": false, "n": 5}, {"id": "178", "t": "现场冲突", "l": 4, "s": "碎片集合", "w": 1763, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "179", "t": "铸币局篇", "l": 5, "s": "一个被铸币局俘虏的人痛骂他们是只知享乐的渣滓", "w": 1870, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "180", "t": "父与子", "l": 5, "s": "『蓝色的血，那是我们的第二个神", "w": 4174, "d": null, "o": false, "r": 0, "h": true, "n": 4}, {"id": "181", "t": "新飞船", "l": 4, "s": "吴钩抱怨新飞船太少，接引人都闲着，眼看崩解的蛹越来越多；苏舞说要相信七人组", "w": 2271, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "182", "t": "要不要投降", "l": 4, "s": "开头：一名飞行员疑惑为什么对方的飞船能预判自己的翻滚和攻击方向，一定有人泄露…", "w": 1627, "d": "163", "o": false, "r": 0, "h": false, "n": 3}, {"id": "183", "t": "故事梗概", "l": null, "s": "雾火山城：一片基地、一个培养皿、保留人性的自由之地，来自盒子团队里『人性派』…", "w": 1374, "d": null, "o": true, "r": 0, "h": false, "n": 3}, {"id": "184", "t": "兄弟嫌隙", "l": 4, "s": "吴钩找上门，苏舞说你都知道了", "w": 1303, "d": null, "o": false, "r": 0, "h": false, "n": 5}, {"id": "185", "t": "点染色", "l": 4, "s": "前面是原稿第 73–77 章的标题(选择、不可逃脱之追杀、吃人作为一种仪式、…", "w": 1057, "d": null, "o": false, "r": 0, "h": false, "n": 4}, {"id": "186", "t": "介绍铸币局", "l": null, "s": "章节卡片『介绍铸币局，从那封信开始』『扣留飞船 艺术品黑市』", "w": 902, "d": "177", "o": true, "r": 0, "h": false, "n": 2}, {"id": "187", "t": "INTP", "l": 4, "s": "『你是第 1000 号徽章持有人，是第 30 个 INTP", "w": 451, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "188", "t": "我思故我在", "l": 5, "s": "和第 117 章『观呼吸』逐字相同(第 117 章标的是第 7 章)：谢磊和…", "w": 682, "d": "117", "o": false, "r": 0, "h": false, "n": 1}, {"id": "189", "t": "笨拙", "l": 1, "s": "周围的人很快学会社会规则，玲珑剔透，衬得秋水很笨拙", "w": 526, "d": "39", "o": false, "r": 0, "h": false, "n": 2}, {"id": "190", "t": "一夫一妻制", "l": 1, "s": "碎片", "w": 585, "d": null, "o": false, "r": 0, "h": false, "n": 3}, {"id": "191", "t": "刺杀", "l": 4, "s": "一个调查者对苏舞说：点开传播泡泡就像进入一段虚拟世界，和盒子很像；有两人几乎…", "w": 442, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "192", "t": "左膀右臂", "l": 4, "s": "代码家族人群山呼海啸，宣布张嘱的名字时，苏舞神情凝重，象征性地鼓了一下掌就离…", "w": 565, "d": null, "o": false, "r": 0, "h": false, "n": 2}, {"id": "193", "t": "一直送人头", "l": null, "s": "作者的章节卡片和批注", "w": 654, "d": null, "o": true, "r": 0, "h": false, "n": 4}, {"id": "194", "t": "叙旧——和苏舞的关系", "l": 4, "s": "正文和第 113 章前半段逐字相同：吴钩开着复原号到塔楼报告崩解，苏舞请喝茶…", "w": 2308, "d": "113", "o": false, "r": 0, "h": false, "n": 1}, {"id": "195", "t": "被埋伏", "l": 4, "s": "手下报告『又是那群疯子』", "w": 583, "d": null, "o": false, "r": 0, "h": false, "n": 1}];
+const LAYERS=[
+ {k:1,n:'觉醒',c:'var(--l1)'},{k:2,n:'盒子',c:'var(--l2)'},{k:3,n:'剧本',c:'var(--l3)'},{k:4,n:'文明',c:'var(--l4)'},
+ {k:5,n:'高我',c:'var(--l5)'},{k:6,n:'多重剧本',c:'var(--l6)'},{k:7,n:'一即一切',c:'var(--l7)'},{k:null,n:'大纲',c:'var(--l0)'}];
+const LC=k=>(LAYERS.find(l=>l.k===k)||LAYERS[7]).c;
+const LN=k=>(LAYERS.find(l=>l.k===k)||LAYERS[7]).n;
+const byId=Object.fromEntries(D.map(d=>[d.id,d]));
+const $=s=>document.querySelector(s);
+
+/* 七层条 */
+const max=Math.max(...LAYERS.map(l=>D.filter(d=>d.l===l.k).length));
+$('#bars').innerHTML=LAYERS.map(l=>{const n=D.filter(d=>d.l===l.k).length;
+ return `<div class="bar"><span>${l.k?l.k+' ':''}${l.n}</span><div class="track"><div class="fill" style="width:${n/max*100}%;background:${l.c}"></div></div><span class="num">${n}</span></div>`}).join('');
+
+/* 图例 */
+$('#legend').innerHTML=`
+ <span class="k"><svg width="18" height="18"><circle cx="9" cy="9" r="7" fill="var(--l2)"/></svg>正常</span>
+ <span class="k"><svg width="18" height="18"><circle cx="9" cy="9" r="6" fill="none" stroke="var(--l0)" stroke-width="3"/></svg>重复，可删</span>
+ <span class="k"><svg width="18" height="18"><circle cx="9" cy="9" r="7" fill="var(--l2)"/><circle cx="9" cy="9" r="8" fill="none" stroke="#C8473B" stroke-width="2"/></svg>红线</span>
+ <span class="k"><svg width="18" height="18"><path d="M9 1l2.4 5 5.4.6-4 3.7 1.1 5.4L9 13l-4.9 2.7 1.1-5.4-4-3.7 5.4-.6z" fill="#E39B2D"/></svg>高光</span>`;
+
+/* 地图 */
+const COLS=8,RH=24,LW=44;
+$('#maphead').innerHTML='<span>章</span>'+LAYERS.map(l=>`<span style="color:${l.c}">${l.k||'纲'}</span>`).join('');
+function drawMap(){
+ const svg=$('#map'),W=svg.clientWidth||340,cw=(W-LW)/COLS,H=D.length*RH+10;
+ svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('height',H);
+ const cx=l=>LW+cw*(l?l-1:7)+cw/2;
+ let path='',g='';
+ D.forEach((d,i)=>{const y=i*RH+RH/2+4,x=cx(d.l);path+=(i?'L':'M')+x+' '+y;});
+ // 分隔：每 10 章一条淡线
+ D.forEach((d,i)=>{const y=i*RH+4;
+  const num=parseFloat(d.id);
+  if(i&&Math.floor(num/10)!==Math.floor(parseFloat(D[i-1].id)/10)) g+=`<line x1="0" x2="${W}" y1="${y}" y2="${y}" stroke="var(--line)"/>`;
+ });
+ g+=`<path d="${path}" fill="none" stroke="var(--line)" stroke-width="2"/>`;
+ D.forEach((d,i)=>{const y=i*RH+RH/2+4,x=cx(d.l),c=LC(d.l);
+  let mark;
+  if(d.d) mark=`<circle cx="${x}" cy="${y}" r="6" fill="var(--card)" stroke="var(--l0)" stroke-width="3"/>`;
+  else mark=`<circle cx="${x}" cy="${y}" r="7" fill="${c}"/>`;
+  if(d.r) mark+=`<circle cx="${x}" cy="${y}" r="10" fill="none" stroke="#C8473B" stroke-width="${d.r>1?3:2}"/>`;
+  if(d.h) mark=`<path transform="translate(${x-9} ${y-9})" d="M9 0l2.6 5.5 6 .7-4.4 4.1 1.2 6L9 13.3l-5.4 3 1.2-6L.4 6.2l6-.7z" fill="#E39B2D" stroke="${c}" stroke-width="1.5"/>`;
+  g+=`<g class="row" data-id="${d.id}" tabindex="0" role="button" aria-label="第${d.id}章 ${d.t}"><rect class="hit" x="0" y="${y-RH/2}" width="${W}" height="${RH}" fill="transparent"/>
+   <text x="${LW-8}" y="${y+5}" text-anchor="end" font-size="13" font-weight="700" fill="var(--mute)">${d.id}</text>${mark}</g>`;
+ });
+ svg.innerHTML=g;
+}
+$('#map').addEventListener('click',e=>{const r=e.target.closest('.row');if(r)openCh(r.dataset.id)});
+$('#map').addEventListener('keydown',e=>{const r=e.target.closest('.row');if(r&&(e.key==='Enter'||e.key===' ')){e.preventDefault();openCh(r.dataset.id)}});
+
+/* 弹出卡 */
+function openCh(id){const d=byId[id];if(!d)return;
+ const tags=[`<span class="chip" style="background:${LC(d.l)}">${d.l?('第'+d.l+'层 '):''}${LN(d.l)}</span>`];
+ if(d.d)tags.push(`<span class="chip" style="background:var(--l0)">和第 ${d.d} 章重复</span>`);
+ if(d.o)tags.push(`<span class="chip" style="background:var(--l0)">作者大纲</span>`);
+ if(d.r)tags.push(`<span class="chip" style="background:#C8473B">${d.r>1?'严重红线':'发表红线'}</span>`);
+ if(d.h)tags.push(`<span class="chip" style="background:#E39B2D">高光</span>`);
+ tags.push(`<span class="chip" style="background:var(--mute)">${d.w} 字 · ${d.n} 个问题</span>`);
+ $('#sheetIn').innerHTML=`<button class="x" aria-label="关闭">×</button><div class="no">第 ${d.id} 章</div><h2>${d.t}</h2><p>${d.s}</p><div class="tags">${tags.join('')}</div>`;
+ $('#sheet').classList.add('on');$('#sheet .x').focus();
+}
+$('#sheet').addEventListener('click',e=>{if(e.target.closest('.x'))$('#sheet').classList.remove('on')});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#sheet').classList.remove('on')});
+document.addEventListener('click',e=>{const p=e.target.closest('.pill[data-ch]');if(p){e.stopPropagation();openCh(p.dataset.ch)}});
+const pills=a=>a.map(c=>`<button class="pill" data-ch="${c}">${c}</button>`).join('');
+
+/* 问答 */
+const QA=[
+ ['为什么秋水关在里面','芯片说外面是极寒世界','y',['1','162'],'✔ 核冬天，只是套娃第一层'],
+ ['为什么秋水有芯片','因为秋水总是怀疑','n',[]],
+ ['为什么秋水去工厂','因为那时候其实秋水是醒着的','y',['1','116','123']],
+ ['为什么秋水被攻击','秋水被逐步唤醒的过程','y',['106','137']],
+ ['为什么要唤醒秋水','独特的使命被严重干扰了，场景里那本佛经','y',['162']],
+ ['为什么有人成绩不好被歧视','因为 N 体质','y',['120','135']],
+ ['150 年前发生了什么','叛乱，想让家族回到正轨，失败了','y',['92','111','130'],'✔ 统一为 150 年前'],
+ ['现在为什么关键','业力很差，蜥蜴人想断地球文明的根','y',['155']],
+ ['太阳为什么动力不足','做出来的局，借口消灭一半盒子','y',['92','177']],
+ ['接引人为什么不服从','接引人不是人，正义方写在程序里','y',['147']],
+ ['糯米是什么','天空家族里的分支，为了维持骄傲，在内部搞出来的','y',['120','169'],'✔ 已定（11-04）'],
+ ['蜥蜴人为什么撤退','偷偷植入了佛的慧根','n',[]],
+ ['代码家族为什么上天','不给蜥蜴人轻易攻破的机会','n',['152']],
+ ['蜥蜴人为什么回来','家族被渗透，破茧组提供痛苦业力','y',['155','176','177']],
+ ['破茧组为什么要下去','提供负面能量','y',['177','178','193']],
+ ['为什么有铸币','维持贪婪和交易','y',['98','142','182']],
+ ['怎么知道家族被渗透','家族回忆照片里发现不对','y',['10']],
+ ['怎么找失去的历史','易容接入家族会议，被拷贝大脑后献祭','x',['153','101'],'正文写的是下地表找卷宗'],
+ ['为什么推极化针','为了报复代码家族','y',['11']],
+ ['家族原本怎么设计','300 人，每家两个孩子，避免近亲','y',['49'],'✔ 第 49 章改为 300 人'],
+ ['胖子军团怎么来的','教官的努力，胖子更能感到意义','y',['138','163']],
+ ['家族为什么被渗透','遇到了 25 号宇宙陷阱','y',['22','164']],
+ ['家族为什么没成功','业力时钟被干扰，没饿死蜥蜴人','n',[]],
+ ['教官为什么存在','接引人退下来的，准备牺牲自己唤醒家族','n',['163']],
+ ['业力时钟怎么运作','整体的业力结算整体，个人的结算个人','y',['179']],
+ ['每个人的人性一面','比如秋水看向窗外行人那段','y',['162']],
+];
+const QC={y:'var(--l5)',x:'#C8473B',n:'var(--l0)'};
+$('#qa').innerHTML=QA.map(([q,a,st,c,note],i)=>`<div class="card" style="border-left:10px solid ${QC[st]}"><h3>${i+1}. ${q}</h3><p style="margin:0 0 8px;font-size:19px">「${a}」</p>${note?`<p class="sub" style="margin:0 0 8px;color:#C8473B;font-weight:700">${note}</p>`:''}<div class="ev">${c.length?'相关章 '+pills(c):'正文还没有这一段'}</div></div>`).join('');
+
+/* 套娃 */
+const DOLL=[
+ ['?','最外面：茧外茧，没有最外层','「真实世界压根不存在」',['175','100']],
+ ['6','内世界 / 外世界','地平、南极之外还有世界（你的笔记）',[]],
+ ['5','地面','以为不能活，其实能呼吸；雾火山城是培养皿',['153','183']],
+ ['4','天空之城 · 代码家族','以为自己是神，其实也被电极控制',['147','113']],
+ ['3','破茧组','以为是救人的，其实也是试验场',['165','173']],
+ ['2','盒子','以为是房间，其实是飞在太空的盒子',['95','116']],
+ ['1','秋水的小屋','芯片说：外面是核冬天',['1','162']],
+];
+const DC=['var(--l7)','var(--l6)','var(--l5)','var(--l4)','var(--l3)','var(--l2)','var(--l1)'];
+(function(){let h='';DOLL.forEach(([n,t,lie,c],i)=>{h+=`<div class="d" style="border-color:${DC[i]};background:${i%2?'var(--card)':'#F7F9FA'}"><div class="lb"><b><span class="chip" style="background:${DC[i]}">${n}</span> ${t}</b><span class="pills">${pills(c)}</span></div><div class="lie">${lie}</div>`;});
+ h+=DOLL.map(()=> '</div>').join('');$('#doll').innerHTML=h;})();
+
+/* 拍板 */
+const DEC=[
+ {q:'男主叫什么',o:[['秋水',['69','116','159'],1],['何亍',['1','162']],['苗普',['151','150']]]},
+ {q:'曦轩是谁',o:[['康城的侦探',['75','77','78']],['秋水的恋人',['122']],['秋水的哥哥',['159']],['同一灵魂，三世',[],1]]},
+ {q:'梓洛是谁',o:[['中学同学',['66']],['街头演说家',['71','115']],['跳楼案嫌疑人',['75','77']],['想消灭未来的天才',['172']],['蓝血亲王',['180'],1]]},
+ {q:'吴钩怎么死的',o:[['被苏舞乱刀砍死',['175']],['和苏舞决斗被刺',['184'],1],['在 13 区被处刑',['193']]]},
+ {q:'糯米怎么来的 ✔ 已定',o:[['家族为了维持骄傲，在内部搞出的分支',['120','169'],1],['专挑 N 型的孩子',['177'],1]]},
+ {q:'盒子为什么存在（真相）',o:[['人就是电池',['107','135','171'],1],['防止边界战争',['96']],['消耗过剩能量',['140']],['假死计划',['152']],['火种保留',['177']]]},
+ {q:'秋水醒来，谁在身边',o:[['府俟，平静',['57']],['博士和唐冰',['116'],1],['府俟，打吗啡',['160']]]},
+ {q:'书名',o:[['盒子宇宙',[],1],['后真相',['151']]]},
+];
+let picks={};try{picks=JSON.parse(localStorage.getItem('box-picks')||'{}')}catch(e){}
+function drawDecide(){
+ $('#decide').innerHTML=DEC.map((d,i)=>`<div class="card"><h3>${i+1}. ${d.q}</h3><div class="opts">${
+  d.o.map(([t,c,r],j)=>`<div class="opt" role="button" tabindex="0" aria-pressed="${picks[i]===j}" data-i="${i}" data-j="${j}"><b>${t}${r?' <span class="rec">建议</span>':''}</b><span class="pills">${pills(c)}</span></div>`).join('')
+ }</div></div>`).join('');
+}
+$('#decide').addEventListener('click',e=>{const o=e.target.closest('.opt');if(!o||e.target.closest('.pill'))return;
+ const i=o.dataset.i,j=+o.dataset.j;picks[i]=picks[i]===j?undefined:j;
+ try{localStorage.setItem('box-picks',JSON.stringify(picks))}catch(err){}drawDecide();});
+$('#decide').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){const o=e.target.closest('.opt');if(o){e.preventDefault();o.click()}}});
+
+/* 接上了 */
+const LINKS=[
+ ['黎安','=','宴长洛',['142','78']],['黎曦','=','宴曦轩',['142','78']],['蓝血亲王','=','梓洛',['180']],
+ ['康城','⊂','雾火山城',['183']],['李显','=','李简',['126']],['盒子里的人','=','电池',['107','135','171']],
+ ['传播泡泡','←','苏舞',['184','191']],['地面','=','能活',['153']],['破茧组','⊂','盒子系统',['165','173','183']],
+ ['男主','=','主动进盒子的家族人',['98','101','180']]];
+$('#links').innerHTML=LINKS.map(([a,op,b,c])=>`<div class="card"><div class="eq"><div class="side">${a}</div><div class="op">${op}</div><div class="side">${b}</div></div><div class="ev">证据 ${pills(c)}</div></div>`).join('');
+
+/* 清理 */
+const dups=D.filter(d=>d.d), outs=D.filter(d=>d.o), reds=D.filter(d=>d.r).sort((a,b)=>b.r-a.r);
+$('#clean').innerHTML=`
+ <div class="card bin" style="border-left-color:var(--l0)"><h3>删重复 <span class="cnt">${dups.length}</span></h3><p class="sub">左边删，右边留。</p>
+  <div class="grid">${dups.map(d=>`<span class="pair"><button class="pill" data-ch="${d.id}">${d.id}</button><span>→</span><button class="pill" data-ch="${d.d}">${d.d}</button></span>`).join('')}</div></div>
+ <div class="card bin" style="border-left-color:var(--accent)"><h3>移到骨架 <span class="cnt">${outs.length}</span></h3><p class="sub">作者大纲和笔记，不进正文。第 183 章最清楚。</p>
+  <div class="grid">${pills(outs.map(d=>d.id))}</div></div>
+ <div class="card bin" style="border-left-color:#C8473B"><h3>发表红线 <span class="cnt">${reds.length}</span></h3><p class="sub">第一个最严重，必须删。</p>
+  <div class="grid">${pills(reds.map(d=>d.id))}</div></div>`;
+
+/* 路由 */
+function show(v){if(!['qa','doll','map','decide','links','clean'].includes(v))v='qa';
+ document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id==='v-'+v));
+ document.querySelectorAll('nav button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));
+ if(v==='map')drawMap();}
+document.querySelector('nav').addEventListener('click',e=>{const b=e.target.closest('button');if(b){location.hash=b.dataset.v;}});
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+window.addEventListener('resize',()=>{if($('#v-map').classList.contains('on'))drawMap()});
+drawDecide();show(location.hash.slice(1));
+</script>
+</body>
+</html>

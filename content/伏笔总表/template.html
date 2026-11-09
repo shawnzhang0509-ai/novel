@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>盒子宇宙伏笔总表</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* 沿用全景图的单一浅色主题。版式：每行一条线，从第 1 层走到第 7 层。 */
+  --bg:#EEF1F4; --card:#FFFFFF; --ink:#18202A; --mute:#5D6875; --line:#D5DBE2;
+  --red:#B3261E; --amb:#D69A1E; --grn:#0F8A6A;
+  --font:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.65;letter-spacing:.02em}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+header{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 16px 8px;border-bottom:1px solid var(--line)}
+.hd,.wrap{max-width:720px;margin:0 auto}
+.wrap{padding:0 16px 96px}
+header h1{margin:0 0 8px;font-size:21px;font-weight:900}
+nav{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+nav button{border:2px solid var(--line);background:var(--card);border-radius:10px;padding:7px 2px;font-weight:700;font-size:16px;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+section{display:none;padding-top:16px}
+section.on{display:block}
+.big{font-size:25px;font-weight:900;line-height:1.35;margin:4px 0 12px;text-wrap:balance}
+.sub{color:var(--mute);font-size:16px;margin:0 0 14px}
+.tiles{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:14px}
+.tile{background:var(--card);border-radius:10px;padding:10px;border-top:5px solid var(--line)}
+.tile.red{border-color:var(--red)}.tile.amb{border-color:var(--amb)}.tile.grn{border-color:var(--grn)}
+.tile b{display:block;font-size:30px;font-weight:900;line-height:1.1;font-variant-numeric:tabular-nums}
+.tile span{font-size:15px;color:var(--mute)}
+.lg{display:flex;gap:16px;font-size:15px;color:var(--mute);margin:0 0 8px}
+.lg span{display:inline-flex;align-items:center;gap:5px}
+.lg svg{width:15px;height:15px;color:var(--ink)}
+.mk-m{fill:var(--card);stroke:currentColor;stroke-width:2.4}
+.mk-s{fill:currentColor;stroke:var(--card);stroke-width:1.5}
+.mk-n{fill:var(--card);stroke:currentColor;stroke-width:2.2;stroke-dasharray:2.6 1.8}
+.ax{display:grid;grid-template-columns:92px 1fr;position:sticky;top:96px;background:var(--bg);z-index:3;padding:4px 0}
+.axr{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;font-size:13px;color:var(--mute);font-weight:700}
+.axr i{font-style:normal}
+.axr i.last{color:var(--ink);font-weight:900}
+.gh{display:flex;justify-content:space-between;align-items:baseline;margin:18px 0 6px;font-size:17px;font-weight:900;padding-left:9px;border-left:5px solid}
+.gh.red{border-color:var(--red)}.gh.amb{border-color:var(--amb)}.gh.grn{border-color:var(--grn)}
+.gh b{font-weight:700;color:var(--mute);font-size:15px}
+.rw{background:var(--card);border-radius:8px;margin-bottom:4px}
+.rw summary{display:grid;grid-template-columns:92px 1fr;align-items:center;min-height:48px;cursor:pointer;list-style:none}
+.rw summary::-webkit-details-marker{display:none}
+.nm{font-size:15px;font-weight:700;line-height:1.3;padding:5px 4px 5px 9px}
+.rw[open] .nm{font-weight:900}
+.tr{position:relative;display:block;height:44px;margin-right:2px}
+.track{position:absolute;inset:0;width:100%;height:100%}
+.gl{stroke:var(--line);stroke-width:1;vector-effect:non-scaling-stroke}
+.ln{stroke-width:2;vector-effect:non-scaling-stroke}
+.ln.red{stroke:var(--red)}.ln.amb{stroke:var(--amb)}.ln.grn{stroke:var(--grn)}
+.ln.dash{stroke-dasharray:5 4}
+.pin{position:absolute;top:14px;width:16px;height:16px;margin-left:-8px;overflow:visible}
+.pin.red{color:var(--red)}.pin.amb{color:var(--amb)}.pin.grn{color:var(--grn)}
+.dt{padding:2px 12px 12px;border-top:1px solid var(--line)}
+.why{font-weight:700;margin:10px 0 8px;font-size:16px}
+.dt ol{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.dt li{display:grid;grid-template-columns:58px 1fr;gap:8px;align-items:start;font-size:16px}
+.kd{font-size:13px;font-weight:700;text-align:center;border-radius:6px;padding:2px 0;border:2px solid var(--ink)}
+.kd.s{background:var(--ink);color:#fff}
+.kd.n{border-style:dashed}
+.tx small{display:block;color:var(--mute);font-size:14px}
+.ask{display:grid;grid-template-columns:40px 1fr;gap:10px;background:var(--card);border-radius:10px;padding:14px;margin-bottom:10px;border-left:5px solid var(--red)}
+.no{font-size:28px;font-weight:900;line-height:1.1;font-variant-numeric:tabular-nums}
+.ask h3{margin:0 0 4px;font-size:20px;font-weight:900}
+.ask p{margin:0 0 6px;font-size:16px}
+.ask .sg{color:var(--mute);margin:0}
+h2.h{font-size:19px;font-weight:900;margin:22px 0 8px}
+ul.plain{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+ul.plain li{background:var(--card);border-radius:8px;padding:8px 12px;font-size:16px;display:flex;justify-content:space-between;gap:10px}
+ul.plain small{color:var(--mute);font-size:14px;white-space:nowrap}
+.bar{display:grid;grid-template-columns:128px 1fr 40px;align-items:center;gap:8px;min-height:36px;font-size:15px}
+.bt{height:12px;display:block}
+.bt i{display:block;height:100%;background:var(--ink);border-radius:0 4px 4px 0}
+.bar b{text-align:right;font-variant-numeric:tabular-nums}
+#tip{position:fixed;z-index:9;max-width:280px;background:var(--ink);color:#fff;font-size:14px;line-height:1.5;padding:6px 10px;border-radius:6px;pointer-events:none;display:none}
+@media (max-width:420px){.ax,.rw summary{grid-template-columns:78px 1fr}.nm{font-size:14px;padding-left:7px}.axr{font-size:12px}.bar{grid-template-columns:112px 1fr 36px}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<header><div class="hd">
+  <h1>盒子宇宙伏笔总表</h1>
+  <nav role="tablist">
+    <button role="tab" data-v="map" aria-selected="true">总图</button>
+    <button role="tab" data-v="ask" aria-selected="false">等你定</button>
+    <button role="tab" data-v="all" aria-selected="false">全部线索</button>
+  </nav>
+</div></header>
+<div class="wrap">
+  <section id="v-map" class="on">
+    <p class="big">%%N%% 条主线，只有 %%G%% 条已经闭环</p>
+    <div class="tiles">
+      <div class="tile red"><b>%%R%%</b><span>✋ 等你定</span></div>
+      <div class="tile amb"><b>%%A%%</b><span>✎ 要新写</span></div>
+      <div class="tile grn"><b>%%G%%</b><span>✓ 原稿已闭环</span></div>
+    </div>
+    %%LEGEND%%
+    <p class="sub">点一行，看原文。层位是暂排。</p>
+    %%AXIS%%
+    %%GROUPS%%
+  </section>
+  <section id="v-ask">
+    <p class="big">这 %%R%% 件事定了，才能开写</p>
+    %%ASK%%
+    <h2 class="h">这些我先定，你可以改</h2>
+    <ul class="plain">%%SELF%%</ul>
+  </section>
+  <section id="v-all">
+    <p class="big">原稿 %%TOTAL%% 条伏笔，逐条判过了</p>
+    <p class="sub">判定没有第二遍复核。明细在 夜间推演/连点成线.md。</p>
+    %%BARS%%
+    <h2 class="h">建议砍的例子，你可以否决</h2>
+    <ul class="plain">%%CUT%%</ul>
+  </section>
+</div>
+<div id="tip" role="tooltip"></div>
+<script>
+(function(){
+  var tabs=[].slice.call(document.querySelectorAll('nav button'));
+  function show(v){
+    tabs.forEach(function(b){b.setAttribute('aria-selected',b.dataset.v===v?'true':'false')});
+    [].forEach.call(document.querySelectorAll('section'),function(s){s.classList.toggle('on',s.id==='v-'+v)});
+  }
+  tabs.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.v);location.hash=b.dataset.v;window.scrollTo(0,0)})});
+  function route(){var h=location.hash.slice(1);if(h==='map'||h==='ask'||h==='all')show(h)}
+  window.addEventListener('hashchange',route);route();
+  var tip=document.getElementById('tip');
+  document.addEventListener('mousemove',function(ev){
+    var p=ev.target.closest&&ev.target.closest('.pin');
+    if(!p){tip.style.display='none';return}
+    tip.textContent=p.getAttribute('data-tip');tip.style.display='block';
+    var x=Math.min(ev.clientX+12,window.innerWidth-292);
+    tip.style.left=x+'px';tip.style.top=(ev.clientY+14)+'px';
+  });
+})();
+</script>
+</body>
+</html>

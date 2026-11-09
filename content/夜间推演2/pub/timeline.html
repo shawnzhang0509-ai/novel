@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>纪元表</title>
+<style>
+:root{ /* 浅色单主题，和晨报一致。系列色取 dataviz 参考色前三位，已跑校验；aqua 对比度不足，靠每个点的直接标签补偿。 */
+ --bg:#EEF1F4;--card:#FFF;--ink:#18202A;--mute:#5D6875;--line:#C9D0D8;--red:#B3261E;
+ --s-b:#2a78d6;--s-f:#eb6834;--s-p:#1baf7a;
+ --font:"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.6}
+main{max-width:720px;margin:0 auto;padding:18px 14px 72px}
+h1{font-size:26px;font-weight:900;line-height:1.35;margin:0 0 6px;text-wrap:balance}
+h2{font-size:21px;font-weight:900;margin:34px 0 8px;text-wrap:balance}
+h3{font-size:17px;margin:0 0 6px}
+.sub{color:var(--mute);font-size:15px;margin:0 0 8px}
+.card{background:var(--card);border-radius:12px;padding:12px}
+.key{display:flex;gap:16px;font-size:15px;color:var(--mute);margin:0 0 4px}
+.key i,.sw{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.B{fill:var(--s-b);stroke:var(--s-b);background:var(--s-b)} .F{fill:var(--s-f);stroke:var(--s-f);background:var(--s-f)} .P{background:var(--s-p)} .W{background:var(--mute)}
+.chart{width:100%;height:auto;display:block}
+.axis{stroke:var(--ink);stroke-width:2}
+.lead{stroke-width:2;fill:none}
+.mk{stroke:var(--card);stroke-width:2}
+.now{font-size:16px;font-weight:900;fill:var(--ink)}
+.tick{font-size:13px;fill:var(--mute)}
+.lab{font-size:19px;font-weight:900;fill:var(--ink)}
+.src{font-size:14px;fill:var(--mute)}
+.dot:hover .lab,.dot:focus .lab{text-decoration:underline}
+#tip{position:fixed;left:12px;right:12px;bottom:12px;max-width:520px;margin:0 auto;background:var(--ink);color:#fff;border-radius:10px;padding:10px 12px;font-size:16px;display:none;z-index:9}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.col h3{text-align:center}
+.era{background:var(--card);border-radius:8px;padding:6px 8px;margin-bottom:4px;font-size:16px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;min-height:40px}
+.era.now{outline:3px solid var(--ink)}
+.tag{background:var(--ink);color:#fff;border-radius:6px;padding:0 6px;font-size:13px;margin-left:auto}
+.nk{color:var(--red);font-size:13px;font-weight:700}
+.says{font-size:14px;color:var(--mute);margin:4px 0 0;text-align:center}
+.fg{background:var(--card);border-radius:10px;margin-bottom:8px}
+.fg summary{padding:12px;font-weight:900;cursor:pointer;display:flex;gap:10px;align-items:center;min-height:44px}
+.fg .x{color:var(--red)}
+.fg p,.fg ul{margin:0;padding:0 12px 10px 34px;font-size:16px}
+.fg p{color:var(--mute)}
+.fg li{margin-bottom:4px}
+.ok{background:var(--card);border-radius:10px;padding:12px;border-left:5px solid #0F8A6A;font-size:16px}
+.ok p{margin:0 0 6px}
+.q{background:var(--card);border-radius:10px;padding:14px;border-left:5px solid var(--red)}
+.q ol{margin:6px 0 0;padding-left:1.4em}
+details.all summary{font-weight:700;cursor:pointer;padding:10px 0}
+table{border-collapse:collapse;width:100%;font-size:14px;background:var(--card)}
+td{border-top:1px solid var(--line);padding:6px;vertical-align:top}
+td:first-child{white-space:nowrap;font-variant-numeric:tabular-nums}
+td small{display:block;color:var(--mute)}
+td:last-child{white-space:nowrap}
+</style></head><body><main>
+<h1>进盒子到现在多久？原稿有 5 个答案</h1>
+<p class="sub">点一个数字，看原文。全部是推论，原稿没动。</p>
+<div class="card">
+<div class="key"><span><i class="B"></i>进盒子以来</span><span><i class="F"></i>家族叛乱</span></div>
+<svg viewBox="0 0 360 640" class="chart" role="img" aria-label="进盒子以来和家族叛乱的年数，按多少年前排列"><line x1="70" x2="70" y1="40" y2="610" class="axis"/><text x="70" y="30" class="now" text-anchor="middle">现在</text><text x="58" y="614.0" class="tick" text-anchor="end">年前</text><g class="dot" tabindex="0" data-tip="笔记（已定）：「极化针是150年前」"><rect x="50" y="103.5" width="300" height="40" fill="transparent"/><line x1="70" x2="96" y1="123.5" y2="123.5" class="lead F"/><circle cx="70" cy="123.5" r="8" class="mk F"/><text x="104" y="130.5" class="lab">150 年</text><text x="186" y="130.5" class="src">笔记（已定）</text></g><g class="dot" tabindex="0" data-tip="第 9、10、11、130 章：「200年前，一场失败的政变，留下唯一的遗产，就是极化针」"><rect x="50" y="141.4" width="300" height="40" fill="transparent"/><line x1="70" x2="96" y1="161.4" y2="161.4" class="lead F"/><circle cx="70" cy="161.4" r="8" class="mk F"/><text x="104" y="168.4" class="lab">200 年</text><text x="186" y="168.4" class="src">第 9、10、11、130 章</text></g><g class="dot" tabindex="0" data-tip="第 180 章：「他戴着这个秘密活了500年」"><rect x="50" y="262.3" width="300" height="40" fill="transparent"/><line x1="70" x2="96" y1="282.3" y2="282.3" class="lead B"/><circle cx="70" cy="282.3" r="8" class="mk B"/><text x="104" y="289.3" class="lab">500 年</text><text x="186" y="289.3" class="src">第 180 章</text></g><g class="dot" tabindex="0" data-tip="第 57 章、笔记：「构建了这个自我运作千年的盒子帝国」"><rect x="50" y="353.7" width="300" height="40" fill="transparent"/><line x1="70" x2="96" y1="373.7" y2="373.7" class="lead B"/><circle cx="70" cy="373.7" r="8" class="mk B"/><text x="104" y="380.7" class="lab">千年</text><text x="152" y="380.7" class="src">第 57 章、笔记</text></g><g class="dot" tabindex="0" data-tip="第 109 章：「时间：盒子纪元2022年」"><rect x="50" y="446.5" width="300" height="40" fill="transparent"/><line x1="70" x2="96" y1="466.5" y2="466.5" class="lead B"/><circle cx="70" cy="466.5" r="8" class="mk B"/><text x="104" y="473.5" class="lab">2022 年</text><text x="203" y="473.5" class="src">第 109 章</text></g><g class="dot" tabindex="0" data-tip="第 15 章：「已经过去了整整旧历4000年（新历6000年）」"><rect x="50" y="536.5" width="300" height="40" fill="transparent"/><line x1="70" x2="96" y1="556.5" y2="556.5" class="lead B"/><circle cx="70" cy="556.5" r="8" class="mk B"/><text x="104" y="557.5" class="lab">旧历 4000 年</text><text x="237" y="557.5" class="src">第 15 章</text></g><g class="dot" tabindex="0" data-tip="第 103、3.7 章：「生活就像这样已经过了五千年了」"><rect x="50" y="566.0" width="300" height="40" fill="transparent"/><line x1="70" x2="96" y1="586.0" y2="586.0" class="lead B"/><circle cx="70" cy="586.0" r="8" class="mk B"/><text x="104" y="601.0" class="lab">五千年</text><text x="169" y="601.0" class="src">第 103、3.7 章</text></g></svg>
+</div>
+
+<h2>现在是第几纪元？两套说法</h2>
+<div class="cols"><div class="col"><h3>第 5 章</h3><div class="era"><span>一 偶得</span></div><div class="era"><span>二 期望</span></div><div class="era"><span>三 后期望</span></div><div class="era"><span>四 封装</span><span class="nk">核战</span></div><div class="era"><span>五 扭曲</span></div><div class="era now"><span>六 回归</span><b class="tag">现在</b></div><p class="says">第 19 章跟它</p></div><div class="col"><h3>第 24 章</h3><div class="era"><span>一 偶得</span></div><div class="era"><span>二 发现</span></div><div class="era"><span>三 增长</span></div><div class="era"><span>四 毁灭</span><span class="nk">核战</span></div><div class="era now"><span>五 盒子</span><b class="tag">现在</b></div><p class="says">第 49、103 章跟它</p></div></div>
+
+<h2>6 处打架</h2>
+<p class="sub">点开看改法，改法只是建议。</p>
+<details class="fg"><summary><b class="x" aria-hidden="true">✕</b><span>现在是第几纪元</span></summary><p>第 5、29 章有六个纪元，现在是第六；第 24 章只有五个，现在是第五。第 19 章说第六，第 24、49、103 章说第五。</p><ul><li>把第 24 章写成代码家族自己的「心境划分」（原文本来就这么说），两套并存，正文统一用一套。</li><li>把第 5 章的第五、第六纪元合成「盒子纪元」，改第 19 章一处。</li></ul></details><details class="fg"><summary><b class="x" aria-hidden="true">✕</b><span>进盒子多久</span></summary><p>同一件事有 5 个数：500 年（180）、千年（57、笔记）、2022 年（109）、旧历 4000 年（15）、五千年（103）。</p><ul><li>套娃已定：每个数字属于一层，各层时钟不同。只要标清每个数在哪一层，原文基本不用改。</li><li>统一成一个数，改其余各处。</li></ul></details><details class="fg"><summary><b class="x" aria-hidden="true">✕</b><span>叛乱是 150 年还是 200 年</span></summary><p>已定 150 年，但第 9、10、11、130 章写 200 年。第 11 章直接写「200年前……极化针」，和笔记「极化针是150年前」正面冲突。</p><ul><li>这 5 处的 200 改成 150。</li><li>第 11 章「数百年的和平」也要跟着改，150 年装不下数百年。</li></ul></details><details class="fg"><summary><b class="x" aria-hidden="true">✕</b><span>第 92 章不是叛乱</span></summary><p>决定记录写「第 92 章的 20/30 年改为 150 年」，但原文 20 年前是停止表演的悲剧，30 年前是一次评估，不是叛乱。</p><ul><li>第 92 章不改，决定记录里这半句删掉（要你同意）。</li></ul></details><details class="fg"><summary><b class="x" aria-hidden="true">✕</b><span>名人放错纪元</span></summary><p>老子在第四纪元（133）、俄狄浦斯在第三纪元（7），两套划分下都不对。王阳明、纪伯伦、马斯克只在其中一套下对。</p><ul><li>不改：第 49 章说封装时中国文明丢了，家族记错历史正好是伏笔。</li><li>改这两处的纪元。</li></ul></details><details class="fg"><summary><b class="x" aria-hidden="true">✕</b><span>秋水五千岁，梓洛只等了 500 年</span></summary><p>第 3.7、103 章秋水约五千岁；第 180 章进盒子才 500 年。</p><ul><li>秋水比盒子老：他进过不止一次盒子（接「爷爷就是上一轮的他」）。</li><li>五千改成五百。</li></ul></details>
+
+<h2>对得上的</h2>
+<div class="ok"><p>✓ 第 5 章「一年只相当于之前的三分之二年」和第 15 章「旧历4000年（新历6000年）」正好对得上，说明作者算过。</p><p>✓ 第 180 章的 500 年，正好等于第 5 章第五纪元的长度（4701-5200）。</p></div>
+
+<h2>只回一题</h2>
+<div class="q"><h3>进盒子到现在多久？</h3><ol><li><b>每一层有自己的时钟，数字各属一层（建议）</b></li><li>统一成 500 年</li><li>统一成五千年</li></ol></div>
+
+<details class="all"><summary>全部原文（44 条）</summary>
+<table><tbody><tr><td>5</td><td>「第四纪元：又称封装纪元。3501-4700年。结束于核弹集中引爆的“岩底之战”」<small>第四纪元起止，核战在 4700 年</small></td><td><i class="sw W"></i>世界纪元</td></tr><tr><td>5</td><td>「第五纪元：又称扭曲纪元。4701年-5200年（一年只相当于之前的三分之二年）」<small>第五纪元长 500 年，是过去</small></td><td><i class="sw W"></i>世界纪元</td></tr><tr><td>5</td><td>「第六纪元：又称回归纪元。5201年至今」<small>现在＝第六纪元</small></td><td><i class="sw W"></i>世界纪元</td></tr><tr><td>29</td><td>「第六纪元：又称回归纪元。5201年至今」<small>同第 5 章，原样重复</small></td><td><i class="sw W"></i>世界纪元</td></tr><tr><td>5</td><td>「从此一天变为16个小时」<small>核战后一天 16 小时</small></td><td><i class="sw W"></i>世界纪元</td></tr><tr><td>19</td><td>「第一次，在第六纪元中」<small>现在＝第六纪元</small></td><td><i class="sw W"></i>世界纪元</td></tr><tr><td>24</td><td>「第四纪元，又名毁灭纪元」<small>另一套划分：第四纪元以核战结束</small></td><td><i class="sw W"></i>世界纪元</td></tr><tr><td>24</td><td>「现在正是第四纪元之后的第五纪元，也就是盒子纪元。」<small>现在＝第五纪元</small></td><td><i class="sw W"></i>世界纪元</td></tr><tr><td>49</td><td>「虽然现在是第五纪元了」<small>现在＝第五纪元</small></td><td><i class="sw W"></i>世界纪元</td></tr><tr><td>103</td><td>「这是第五纪元中的某一刻」<small>秋水所在＝第五纪元</small></td><td><i class="sw W"></i>世界纪元</td></tr><tr><td>122</td><td>「这是第五纪元的第一面旗帜」<small>第五纪元好像刚开始</small></td><td><i class="sw W"></i>世界纪元</td></tr><tr><td>185</td><td>「第五纪元的第一场辩论」<small>第五纪元好像刚开始</small></td><td><i class="sw W"></i>世界纪元</td></tr><tr><td>7</td><td>「我们要学习的第一个内容是俄狄浦斯王，这是第三纪元时期」<small>俄狄浦斯＝第三纪元</small></td><td><i class="sw W"></i>世界纪元</td></tr><tr><td>129</td><td>「王阳明就是第三纪元中能做到和代码家族类似的一个人」<small>王阳明＝第三纪元</small></td><td><i class="sw W"></i>世界纪元</td></tr><tr><td>133</td><td>「这句话是第四纪元时期一个叫老子的人说的」<small>老子＝第四纪元</small></td><td><i class="sw W"></i>世界纪元</td></tr><tr><td>19</td><td>「第二纪元时期一名名叫纪伯伦的诗作」<small>纪伯伦＝第二纪元</small></td><td><i class="sw W"></i>世界纪元</td></tr><tr><td>22</td><td>「在第三纪元，一个叫马克.扎克伯格的人开发出facebook」<small>扎克伯格＝第三纪元</small></td><td><i class="sw W"></i>世界纪元</td></tr><tr><td>134</td><td>「在第四纪元之时，有一个人名字叫埃隆马斯克」<small>马斯克＝第四纪元</small></td><td><i class="sw W"></i>世界纪元</td></tr><tr><td>101</td><td>「在岩底之战时，大部分人都选择进入了盒子」<small>进盒子＝岩底之战</small></td><td><i class="sw B"></i>进盒子以来</td></tr><tr><td>98</td><td>「所有的核弹全部爆炸，以此显示再也不回地球」<small>进盒子时核弹全炸</small></td><td><i class="sw B"></i>进盒子以来</td></tr><tr><td>15</td><td>「已经过去了整整旧历4000年（新历6000年）」<small>人类离开地面至今</small></td><td><i class="sw B"></i>进盒子以来</td></tr><tr><td>180</td><td>「他戴着这个秘密活了500年」<small>进盒子至今 500 年</small></td><td><i class="sw B"></i>进盒子以来</td></tr><tr><td>180</td><td>「那扇门，已经500年没有开过了」<small>门 500 年没开</small></td><td><i class="sw B"></i>进盒子以来</td></tr><tr><td>103</td><td>「生活就像这样已经过了五千年了」<small>这样的生活过了五千年</small></td><td><i class="sw B"></i>进盒子以来</td></tr><tr><td>109</td><td>「时间：盒子纪元2022年」<small>盒子纪元第 2022 年</small></td><td><i class="sw B"></i>进盒子以来</td></tr><tr><td>57</td><td>「构建了这个自我运作千年的盒子帝国」<small>盒子运作千年</small></td><td><i class="sw B"></i>进盒子以来</td></tr><tr><td>笔记</td><td>「1000年以后，盒子重新开始苏醒」<small>盒子 1000 年后苏醒</small></td><td><i class="sw B"></i>进盒子以来</td></tr><tr><td>笔记</td><td>「150年前发生了什么」<small>叛乱在 150 年前</small></td><td><i class="sw F"></i>代码家族内史</td></tr><tr><td>笔记</td><td>「极化针是150年前」<small>极化针在 150 年前</small></td><td><i class="sw F"></i>代码家族内史</td></tr><tr><td>决定</td><td>「家族叛乱发生在 150 年前」<small>已采用 150 年</small></td><td><i class="sw F"></i>代码家族内史</td></tr><tr><td>111</td><td>「这是一百五十年前到现在的规矩」<small>七人会议规矩立了 150 年</small></td><td><i class="sw F"></i>代码家族内史</td></tr><tr><td>11</td><td>「200年前，一场失败的政变，留下唯一的遗产，就是极化针」<small>政变和极化针在 200 年前</small></td><td><i class="sw F"></i>代码家族内史</td></tr><tr><td>11</td><td>「家族从此迎来了数百年的和平」<small>政变后「数百年」和平</small></td><td><i class="sw F"></i>代码家族内史</td></tr><tr><td>10</td><td>「但是我感觉200年前，一定发生了什么事情」<small>200 年前出事</small></td><td><i class="sw F"></i>代码家族内史</td></tr><tr><td>9</td><td>「大概200多年前，代码家族竟然发现，家族内部的NT松果体居然开始觉醒」<small>NT 觉醒在 200 多年前</small></td><td><i class="sw F"></i>代码家族内史</td></tr><tr><td>9</td><td>「而这也是你的六世祖改变相貌的时刻」<small>六代以前</small></td><td><i class="sw F"></i>代码家族内史</td></tr><tr><td>130</td><td>「为了避免再次出现两百多年前那样的政变」<small>政变在两百多年前</small></td><td><i class="sw F"></i>代码家族内史</td></tr><tr><td>92</td><td>「二十年前的事情他并不是不知道」<small>停止表演的悲剧，20 年前（不是叛乱）</small></td><td><i class="sw F"></i>代码家族内史</td></tr><tr><td>92</td><td>「从前的情况和三十年前并不一样，这次有太阳衰减」<small>上次评估，30 年前（不是叛乱）</small></td><td><i class="sw F"></i>代码家族内史</td></tr><tr><td>笔记</td><td>「他们其中都是100年整的寿命」<small>家族寿命 100 年</small></td><td><i class="sw F"></i>代码家族内史</td></tr><tr><td>3.7</td><td>「秋水想了想，自己应该有五千岁左右了」<small>秋水约五千岁</small></td><td><i class="sw P"></i>人物年龄</td></tr><tr><td>3.7</td><td>「应该大概是五千圈左右了」<small>五千圈＝五千年</small></td><td><i class="sw P"></i>人物年龄</td></tr><tr><td>103</td><td>「秋水想了想，自己应该有五千岁左右了」<small>同第 3.7 章，原样重复</small></td><td><i class="sw P"></i>人物年龄</td></tr><tr><td>180</td><td>「这一刻在他心中留了500年」<small>梓洛等了 500 年</small></td><td><i class="sw P"></i>人物年龄</td></tr></tbody></table></details>
+</main>
+<div id="tip" role="status"></div>
+<script>
+const tip=document.getElementById('tip');
+document.querySelectorAll('.dot').forEach(g=>{
+ const show=()=>{tip.textContent=g.dataset.tip;tip.style.display='block'};
+ g.addEventListener('mouseenter',show);g.addEventListener('focus',show);g.addEventListener('click',show);
+ g.addEventListener('mouseleave',()=>tip.style.display='none');g.addEventListener('blur',()=>tip.style.display='none');
+});
+</script>
+</body></html>
