@@ -16,6 +16,7 @@ import {
   RefreshCw,
 } from 'lucide-react';
 import {
+  cloudHealth,
   cloudPull,
   cloudPush,
   generateSyncCode,
@@ -44,9 +45,17 @@ export default function DataManager({
   const [syncCode, setSyncCode] = useState('');
   const [cloudMsg, setCloudMsg] = useState('');
   const [cloudBusy, setCloudBusy] = useState(false);
+  const [redisStatus, setRedisStatus] = useState<'checking' | 'ready' | 'missing' | 'unknown'>('checking');
+  const [redisHint, setRedisHint] = useState('');
 
   useEffect(() => {
-    if (open) setSyncCode(loadSyncCode());
+    if (!open) return;
+    setSyncCode(loadSyncCode());
+    setRedisStatus('checking');
+    cloudHealth().then(h => {
+      setRedisStatus(h.redis);
+      setRedisHint(h.hint || '');
+    });
   }, [open]);
 
   const handleFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -70,7 +79,11 @@ export default function DataManager({
     const code = ensureCode();
     const res = await cloudPush(code, store);
     setCloudBusy(false);
-    setCloudMsg(res.ok ? '已保存到 Upstash Redis（免费 Redis）' : `保存失败：${res.error}`);
+    if (res.ok) {
+      setCloudMsg(`已保存到云端。换浏览器时输入同步码「${code}」再拉取。`);
+    } else {
+      setCloudMsg(`保存失败：${res.error}`);
+    }
   };
 
   const pullCloud = async () => {
@@ -89,13 +102,24 @@ export default function DataManager({
       return;
     }
     if (!res.data) {
-      setCloudMsg('云端还没有数据，先点「保存到云端」');
+      setCloudMsg('云端还没有数据，先在旧浏览器点「保存到云端」');
       return;
     }
-    if (!confirm('用云端数据覆盖本机？')) return;
+    if (!confirm('用云端数据覆盖本机？（文章、线索、粒子连线都会替换）')) return;
     onReplaceStore(res.data);
-    setCloudMsg('已从云端拉回本机');
+    setCloudMsg('已从云端拉回：粒子海也会一起回来');
   };
+
+  const statusLabel =
+    redisStatus === 'ready' ? 'Redis 已就绪' :
+    redisStatus === 'missing' ? '尚未配置 Redis' :
+    redisStatus === 'checking' ? '检查中…' :
+    '无法检测（需部署到 Vercel）';
+
+  const statusClass =
+    redisStatus === 'ready' ? 'border-emerald-500/35 bg-emerald-500/10 text-emerald-300' :
+    redisStatus === 'missing' ? 'border-amber-500/35 bg-amber-500/10 text-amber-200' :
+    'border-border bg-muted/30 text-muted-foreground';
 
   return (
     <Sheet open={open} onOpenChange={(v) => !v && onClose()}>
@@ -106,16 +130,38 @@ export default function DataManager({
 
         <div className="py-4 space-y-5 overflow-y-auto">
           <div className="rounded-lg border border-sky-500/25 bg-sky-500/8 p-3 space-y-3">
-            <div className="text-sm font-medium flex items-center gap-1.5">
-              <Cloud className="w-4 h-4 text-sky-400" />
-              云端同步（Upstash Redis，免费）
+            <div className="flex items-center justify-between gap-2">
+              <div className="text-sm font-medium flex items-center gap-1.5">
+                <Cloud className="w-4 h-4 text-sky-400" />
+                云端同步（Upstash Redis）
+              </div>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full border ${statusClass}`}>
+                {statusLabel}
+              </span>
             </div>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              不建 SQL 数据库：整份数据存成 Redis 里的一条 JSON。部署到 Vercel 后，在环境变量填
-              UPSTASH_REDIS_REST_URL / TOKEN。本地 npm run dev 没有 API，需上线后才能同步。
-            </p>
+
+            {redisStatus !== 'ready' && (
+              <ol className="text-xs text-muted-foreground leading-relaxed list-decimal pl-4 space-y-1.5">
+                <li>打开 <span className="text-foreground/90">upstash.com</span> 免费注册 → Create Database → Redis</li>
+                <li>复制 <span className="text-foreground/90">REST URL</span> 和 <span className="text-foreground/90">REST TOKEN</span></li>
+                <li>Vercel 项目 → Settings → Environment Variables 添加：
+                  <code className="block mt-1 text-[10px] font-mono text-foreground/85 bg-background/50 rounded px-2 py-1">
+                    UPSTASH_REDIS_REST_URL
+                    <br />
+                    UPSTASH_REDIS_REST_TOKEN
+                  </code>
+                </li>
+                <li>Deployments → 最新一次 → Redeploy（必须重新部署才生效）</li>
+                <li>回到这里：生成同步码 → 保存到云端；换浏览器输入同一码 → 拉取</li>
+              </ol>
+            )}
+
+            {redisHint && redisStatus !== 'ready' && (
+              <p className="text-[11px] text-amber-200/90 leading-relaxed">{redisHint}</p>
+            )}
+
             <div className="space-y-1.5">
-              <div className="text-[11px] text-muted-foreground">同步码（换设备输入同一串）</div>
+              <div className="text-[11px] text-muted-foreground">同步码（换设备 / 换浏览器填同一串）</div>
               <div className="flex gap-2">
                 <Input
                   value={syncCode}
@@ -134,7 +180,7 @@ export default function DataManager({
                     const code = generateSyncCode();
                     setSyncCode(code);
                     saveSyncCode(code);
-                    setCloudMsg('已生成新同步码，记得保存到云端');
+                    setCloudMsg('已生成新同步码，记得点「保存到云端」');
                   }}
                   title="生成"
                 >
@@ -156,20 +202,11 @@ export default function DataManager({
               </div>
             </div>
             <div className="flex gap-2">
-              <Button
-                className="flex-1 h-11 gap-1.5"
-                disabled={cloudBusy}
-                onClick={pushCloud}
-              >
+              <Button className="flex-1 h-11 gap-1.5" disabled={cloudBusy} onClick={pushCloud}>
                 <CloudUpload className="w-4 h-4" />
                 保存到云端
               </Button>
-              <Button
-                variant="outline"
-                className="flex-1 h-11 gap-1.5"
-                disabled={cloudBusy}
-                onClick={pullCloud}
-              >
+              <Button variant="outline" className="flex-1 h-11 gap-1.5" disabled={cloudBusy} onClick={pullCloud}>
                 <CloudDownload className="w-4 h-4" />
                 从云端拉取
               </Button>
@@ -185,7 +222,7 @@ export default function DataManager({
               本机缓存
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              平时仍写在本机浏览器。云端是备份/换机用；也可继续用下面的 JSON 文件备份。
+              平时写在本机浏览器。换浏览器不会自动带上，要用上面的云端同步或 JSON 文件。
             </p>
           </div>
 
